@@ -8,12 +8,12 @@ and the AI-assisted contribution transparency policy.
 ## Fork / branch workflow
 
 1. **Fork** the repository on GitHub:
-   `https://github.com/alirezax5/ultimate-cache`.
+   `https://github.com/alirezax5/Ultimate-Performance`.
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/<your-username>/ultimate-cache.git
-   cd ultimate-cache
-   git remote add upstream https://github.com/alirezax5/ultimate-cache.git
+   git clone https://github.com/<your-username>/Ultimate-Performance.git
+   cd Ultimate-Performance
+   git remote add upstream https://github.com/alirezax5/Ultimate-Performance.git
    ```
 3. **Install** Composer dependencies:
    ```bash
@@ -88,7 +88,7 @@ to merge.
 ## How to report defects
 
 Open a GitHub Issue at
-`https://github.com/alirezax5/ultimate-cache/issues`. Include:
+`https://github.com/alirezax5/Ultimate-Performance/issues`. Include:
 
 1. **Ultimate Performance version:** `wp eval 'echo ULTIMATE_PERFORMANCE_VERSION;'`
    or the `Stable tag` line in `readme.txt`.

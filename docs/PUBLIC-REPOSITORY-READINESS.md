@@ -58,7 +58,7 @@ Sealed ZIP SHA-256 remains: 7b436caadfec787d0d0c1407b07b51d4c06a5e71ed25294bfa17
 
 ## i18n Audit
 
-- Text domain: `ultimate-cache` (consistent across all `__()` / `esc_html__()` calls)
+- Text domain: `ultimate-performance` (consistent across all `__()` / `esc_html__()` calls)
 - POT file exists: `languages/ultimate-performance.pot`
 - Admin strings already use i18n functions (verified in `src/Admin/AdminPage.php`)
 - No hardcoded UI strings found that should be translatable
@@ -105,7 +105,7 @@ No runtime code changes. Existing 0.6.1 qualification remains valid:
 ## GitHub Repository
 
 ```
-https://github.com/alirezax5/ultimate-cache
+https://github.com/alirezax5/Ultimate-Performance
 ```
 
 The repository is ready for public GitHub presentation with:

@@ -4,7 +4,7 @@
 **Plugin version:** 0.6.2
 **Starting HEAD:** `f792850` (REDIS-PASSWORD-PRESERVATION closure)
 **Final HEAD:** `6d5d893` (after silent deactivation fix)
-**Release ZIP:** `ultimate-cache-0.6.2.zip` (2.7 MB, 777 files)
+**Release ZIP:** `ultimate-performance-0.6.2.zip` (2.7 MB, 777 files)
 **ZIP SHA-256:** `544f3e55b3b00ebb241b84c1476454dcb46584225d2e89493cee10b0d398d891`
 **Date:** 2026-09-14
 
@@ -170,7 +170,7 @@ Searched for `deactivate_plugins` in all source files: NOT present anywhere. The
 
 | Field | Value |
 |-------|-------|
-| Path | `/home/z/my-project/download/ultimate-cache-0.6.2.zip` |
+| Path | `/home/z/my-project/download/ultimate-performance-0.6.2.zip` |
 | Size | 2,745,843 bytes (2.7 MB) |
 | File count | 777 |
 | SHA-256 | `544f3e55b3b00ebb241b84c1476454dcb46584225d2e89493cee10b0d398d891` |

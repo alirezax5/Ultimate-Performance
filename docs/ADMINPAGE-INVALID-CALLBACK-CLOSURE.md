@@ -4,7 +4,7 @@
 **Plugin version:** 0.6.2
 **Starting HEAD:** `d0c8d8b` (SILENT-DEACTIVATION closure)
 **Final HEAD:** `d68decd` (after callback audit fix)
-**Release ZIP:** `ultimate-cache-0.6.2.zip` (2.7 MB, 779 files)
+**Release ZIP:** `ultimate-performance-0.6.2.zip` (2.7 MB, 779 files)
 **ZIP SHA-256:** `ef978ee7fd5ea2f662755b6cea9fd22187bd79f876cb4e6daf5e9166c7edd9a1`
 **Date:** 2026-09-14
 
@@ -153,7 +153,7 @@ php -l src/Core/Plugin.php      → No syntax errors
 
 | Field | Value |
 |-------|-------|
-| Path | `/home/z/my-project/download/ultimate-cache-0.6.2.zip` |
+| Path | `/home/z/my-project/download/ultimate-performance-0.6.2.zip` |
 | Size | 2,752,985 bytes (2.7 MB) |
 | File count | 779 |
 | SHA-256 | `ef978ee7fd5ea2f662755b6cea9fd22187bd79f876cb4e6daf5e9166c7edd9a1` |

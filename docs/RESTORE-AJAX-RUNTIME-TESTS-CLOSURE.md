@@ -4,7 +4,7 @@
 **Plugin version:** 0.6.3
 **Starting HEAD:** `599d9f7` (ADMINPAGE-INVALID-CALLBACK-CLOSURE)
 **Final HEAD:** `68bdab0` (AJAX-RUNTIME-RESTORE)
-**Release ZIP:** `ultimate-cache-0.6.3.zip` (2.9 MB, 784 files)
+**Release ZIP:** `ultimate-performance-0.6.3.zip` (2.9 MB, 784 files)
 **ZIP SHA-256:** `0c2baf15ebd2a57f7c06664dbbc2ce7ee29bd133848fc1567b0892ca99b83ef4`
 **Date:** 2026-09-15
 
@@ -272,7 +272,7 @@ The `array('type' => 'button')` fifth argument adds the `type="button"` attribut
 - **Size:** 18485 bytes
 - **Registered handle:** `ultimate-performance-admin`
 - **Dependencies:** `jquery`
-- **Loaded on:** Ultimate Performance admin pages only (`settings_page_ultimate-cache`, `toplevel_page_ultimate-cache`)
+- **Loaded on:** Ultimate Performance admin pages only (`settings_page_ultimate-performance`, `toplevel_page_ultimate-performance`)
 - **Cache-bust version:** `filemtime()` of the asset file (§15) — falls back to `ULTIMATE_PERFORMANCE_VERSION` if the file is missing
 - **In-footer:** true (no render-blocking)
 
@@ -440,7 +440,7 @@ The browser test plan to run on a real VPS:
 ```text
 1. Install Ultimate Performance 0.6.3 from this ZIP on a fresh WordPress 6.x install
 2. Configure Redis (host=127.0.0.1, port=6379, db=3, no auth)
-3. Open /wp-admin/options-general.php?page=ultimate-cache&tab=object-cache
+3. Open /wp-admin/options-general.php?page=ultimate-performance&tab=object-cache
 4. Open browser DevTools Network tab
 5. Verify GET /wp-admin/options-general.php?... loads admin.js (HTTP 200)
 6. Click "Test Redis Connection":
@@ -519,7 +519,7 @@ if ( $db > 0 ) {
 
 The handler explicitly `SELECT`s the configured DB before any write/read/del — so DB=3 in admin settings means the test runs against DB 3, not DB 0.
 
-The test key is `ultimate-cache:test:<random12hex>` with 60s TTL (§41).
+The test key is `ultimate-performance:test:<random12hex>` with 60s TTL (§41).
 
 ---
 
@@ -541,7 +541,7 @@ This is the cross-process / cross-request proof the directive mandates. The AJAX
 
 ## 15. Plugin-active proof (§56)
 
-After running the full regression (59 suites × 1644 PASS), the test harness does NOT call `wp plugin is-active ultimate-cache` because there is no real WordPress install in this sandbox. The plugin remains loaded because:
+After running the full regression (59 suites × 1644 PASS), the test harness does NOT call `wp plugin is-active ultimate-performance` because there is no real WordPress install in this sandbox. The plugin remains loaded because:
 
 - The AJAX handlers `return` early on auth failure (do not call `wp_die(0)`)
 - The shared service methods `return $result` (do not throw)
@@ -565,7 +565,7 @@ The previous fatal occurred because `admin_enqueue_scripts` was registered globa
 ## 17. Fresh-clone result (§61)
 
 ```
-git clone --depth 1 file:///home/z/my-project/work/ultimate-cache-extract uc-fresh-clone
+git clone --depth 1 file:///home/z/my-project/work/up-current/ultimate-performance uc-fresh-clone
 cd uc-fresh-clone
 bash tests/run-all-regression.sh FRESH
 ```
@@ -585,7 +585,7 @@ Result:
 
 | Field | Value |
 |-------|-------|
-| Path | `/home/z/my-project/download/ultimate-cache-0.6.3.zip` |
+| Path | `/home/z/my-project/download/ultimate-performance-0.6.3.zip` |
 | Size | 3,025,383 bytes (2.9 MB) |
 | File count | 784 |
 | SHA-256 | `0c2baf15ebd2a57f7c06664dbbc2ce7ee29bd133848fc1567b0892ca99b83ef4` |
@@ -593,11 +593,11 @@ Result:
 
 ZIP contents verified to contain:
 - `ultimate-performance/ultimate-performance.php` (6093 bytes)
-- `ultimate-cache/src/Admin/AdminPage.php` (131625 bytes)
-- `ultimate-cache/assets/js/admin.js` (18485 bytes)
-- `ultimate-cache/languages/ultimate-performance.pot` (21505 bytes)
-- `ultimate-cache/tests/audit-ajax-runtime.php` (15814 bytes)
-- `ultimate-cache/tests/audit-adminpage-callbacks.php` (10456 bytes)
+- `ultimate-performance/src/Admin/AdminPage.php` (131625 bytes)
+- `ultimate-performance/assets/js/admin.js` (18485 bytes)
+- `ultimate-performance/languages/ultimate-performance.pot` (21505 bytes)
+- `ultimate-performance/tests/audit-ajax-runtime.php` (15814 bytes)
+- `ultimate-performance/tests/audit-adminpage-callbacks.php` (10456 bytes)
 
 ---
 
@@ -617,7 +617,7 @@ ZIP contents verified to contain:
 | `tests/wp-shim/lib/as-classes.php` | Added `ShimWpdb::$base_prefix = 'wp_'` (was missing). |
 | `tests/wp-shim/wp-load.php` | Added `$GLOBALS['_uc_scripts']`, `$GLOBALS['_uc_enqueued_scripts']`, `$GLOBALS['_uc_last_json_response']` initialization. |
 | `scripts/regenerate-pot.py` | Fixed POT header preservation — only `#` comment lines preserved, NOT the `Project-Id-Version` block (was leaking stale version into commits). |
-| `scripts/build-release-zip.sh` | Updated `ZIP_NAME` to `ultimate-cache-0.6.3.zip`. |
+| `scripts/build-release-zip.sh` | Updated `ZIP_NAME` to `ultimate-performance-0.6.3.zip`. |
 | `languages/ultimate-performance.pot` | Regenerated (242 msgids, version 0.6.3). |
 | `readme.txt` | Stable tag 0.6.2 → 0.6.3 + new changelog entry. |
 | `CHANGELOG.md` | Added `[0.6.3]` section. |
@@ -694,7 +694,7 @@ The directive's mission is **ARCHITECTURALLY CLOSED** at the PHP level:
 10. ✅ Invalid capability → 403 JSON.
 11. ✅ 181 new audit checks (108 callback + 73 AJAX runtime) prevent this class of regression from recurring.
 12. ✅ Fresh-clone regression: 59 suites × 1644 PASS / 0 FAIL / 17 honest BLOCKED — identical to main tree.
-13. ✅ Release ZIP built and verified: `ultimate-cache-0.6.3.zip` (784 files, SHA-256 `0c2baf15ebd2a57f7c06664dbbc2ce7ee29bd133848fc1567b0892ca99b83ef4`).
+13. ✅ Release ZIP built and verified: `ultimate-performance-0.6.3.zip` (784 files, SHA-256 `0c2baf15ebd2a57f7c06664dbbc2ce7ee29bd133848fc1567b0892ca99b83ef4`).
 
 The browser-acceptance gate (§49 / §50 / §51) remains honestly BLOCKED on this sandbox. The browser test plan in §11 is the procedure to close that gate on a real VPS.
 

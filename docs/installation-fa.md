@@ -19,14 +19,14 @@
 
 ## نصب ZIP
 
-1. آخرین نسخهٔ ZIP را از صفحهٔ [Releases](https://github.com/alirezax5/ultimate-cache/releases) دریافت کنید.
+1. آخرین نسخهٔ ZIP را از صفحهٔ [Releases](https://github.com/alirezax5/Ultimate-Performance/releases) دریافت کنید.
 2. در `wp-admin ← افزونه‌ها ← افزودن جدید ← بارگذاری افزونه`، ZIP را انتخاب و **اکنون نصب کن** را بزنید.
 3. روی **فعال‌سازی** کلیک کنید.
 
 یا با WP-CLI:
 
 ```bash
-wp plugin install ultimate-cache.zip --activate
+wp plugin install ultimate-performance.zip --activate
 ```
 
 ## فعال‌سازی افزونه

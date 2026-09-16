@@ -89,7 +89,7 @@ HTTP GET /
 
 1. **پیش‌نیازها:** وردپرس 6.0 به بالا، PHP 8.3 به بالا. پیشنهادی: Nginx برای حالت شتاب‌دهی توسط سرور؛ Redis یا Memcached برای کش شیء.
 2. **نصب افزونه:**
-   - آخرین نسخهٔ ZIP را از صفحهٔ [Releases](https://github.com/alirezax5/ultimate-cache/releases) دریافت کنید.
+   - آخرین نسخهٔ ZIP را از صفحهٔ [Releases](https://github.com/alirezax5/Ultimate-Performance/releases) دریافت کنید.
    - در `wp-admin ← افزونه‌ها ← افزودن جدید ← بارگذاری افزونه`، ZIP را انتخاب و **اکنون نصب کن** را بزنید.
    - فعال کنید.
 3. **فعال‌سازی کش صفحه:** به `تنظیمات ← Ultimate Performance` بروید، تیک **Enable page cache** را بزنید و ذخیره کنید. ریشهٔ کش (`wp-content/cache/ultimate-performance/`) هنگام فعال‌سازی ساخته می‌شود؛ درآپ‌این `advanced-cache.php` تا زمانی که درآپ‌این بیگانه‌ای وجود نداشته باشد نصب می‌شود.

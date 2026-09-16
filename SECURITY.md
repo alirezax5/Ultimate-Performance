@@ -13,7 +13,7 @@ If you discover a security vulnerability in Ultimate Performance, please report 
 
 1. **Do NOT open a public GitHub issue** for security vulnerabilities.
 2. Email: Report via GitHub's private vulnerability reporting feature at
-   [https://github.com/alirezax5/ultimate-cache/security/advisories/new](https://github.com/alirezax5/ultimate-cache/security/advisories/new)
+   [https://github.com/alirezax5/Ultimate-Performance/security/advisories/new](https://github.com/alirezax5/Ultimate-Performance/security/advisories/new)
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce

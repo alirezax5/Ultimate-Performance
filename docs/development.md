@@ -10,8 +10,8 @@ coding conventions, and how to contribute.
 ## Repository setup
 
 ```bash
-git clone https://github.com/alirezax5/ultimate-cache.git
-cd ultimate-cache
+git clone https://github.com/alirezax5/Ultimate-Performance.git
+cd ultimate-performance
 composer install        # installs php-amqplib (only runtime dependency)
 ```
 
@@ -154,8 +154,8 @@ the PHP-FPM pool.
 To reproduce the 0.6.1 qualification:
 
 ```bash
-git clone https://github.com/alirezax5/ultimate-cache.git
-cd ultimate-cache
+git clone https://github.com/alirezax5/Ultimate-Performance.git
+cd ultimate-performance
 git checkout 0.6.1
 composer install
 bash tests/run-all-regression.sh R1
@@ -171,11 +171,11 @@ The release ZIP is built from a clean checkout, excluding developer-only
 artifacts:
 
 ```bash
-git clone https://github.com/alirezax5/ultimate-cache.git uc-release
+git clone https://github.com/alirezax5/Ultimate-Performance.git uc-release
 cd uc-release
 git checkout 0.6.1
 composer install --no-dev --optimize-autoloader
-zip -r ../ultimate-cache-0.6.1.zip . \
+zip -r ../ultimate-performance-0.6.1.zip . \
     -x '.git/*' \
     -x 'tests/*' \
     -x 'docs/*' \

@@ -7,8 +7,8 @@
 ## راه‌اندازی مخزن
 
 ```bash
-git clone https://github.com/alirezax5/ultimate-cache.git
-cd ultimate-cache
+git clone https://github.com/alirezax5/Ultimate-Performance.git
+cd ultimate-performance
 composer install        # php-amqplib را نصب می‌کند (تنها وابستگی runtime)
 ```
 
@@ -112,8 +112,8 @@ runnerهای زنده روی میزبان خودکار تأمین می‌شون�
 برای بازتولید صلاحیت‌بخشی 0.6.1:
 
 ```bash
-git clone https://github.com/alirezax5/ultimate-cache.git
-cd ultimate-cache
+git clone https://github.com/alirezax5/Ultimate-Performance.git
+cd ultimate-performance
 git checkout 0.6.1
 composer install
 bash tests/run-all-regression.sh R1
@@ -126,11 +126,11 @@ bash tests/run-all-regression.sh R1
 ZIP انتشار از یک checkout تمیز ساخته می‌شود، بدون artifactهای فقط-توسعه:
 
 ```bash
-git clone https://github.com/alirezax5/ultimate-cache.git uc-release
+git clone https://github.com/alirezax5/Ultimate-Performance.git uc-release
 cd uc-release
 git checkout 0.6.1
 composer install --no-dev --optimize-autoloader
-zip -r ../ultimate-cache-0.6.1.zip . \
+zip -r ../ultimate-performance-0.6.1.zip . \
     -x '.git/*' \
     -x 'tests/*' \
     -x 'docs/*' \

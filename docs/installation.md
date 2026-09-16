@@ -25,7 +25,7 @@ WordPress itself.
 ## Install the ZIP
 
 1. Download the latest release ZIP from the
-   [Releases page](https://github.com/alirezax5/ultimate-cache/releases).
+   [Releases page](https://github.com/alirezax5/Ultimate-Performance/releases).
 2. In `wp-admin → Plugins → Add New → Upload Plugin`, choose the ZIP and
    click **Install Now**.
 3. Click **Activate**.
@@ -33,7 +33,7 @@ WordPress itself.
 Or with WP-CLI:
 
 ```bash
-wp plugin install ultimate-cache.zip --activate
+wp plugin install ultimate-performance.zip --activate
 ```
 
 ## Activate the plugin

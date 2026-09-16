@@ -6,7 +6,7 @@
 
 ## Critical Finding
 
-The repository at `/home/z/my-project/work/ultimate-cache-extract/` was found at HEAD `14d19b5` (Phase O closure). **All hardening work (HARDEN-0 through HARDEN-9, LIVE-Q-0 through LIVE-Q-9) was missing from the local tree.** The commits `a6f5324`, `c6b2291`, `297aa3f` referenced in the prompt do NOT exist in this repository.
+The repository at `/home/z/my-project/work/up-current/ultimate-performance/` was found at HEAD `14d19b5` (Phase O closure). **All hardening work (HARDEN-0 through HARDEN-9, LIVE-Q-0 through LIVE-Q-9) was missing from the local tree.** The commits `a6f5324`, `c6b2291`, `297aa3f` referenced in the prompt do NOT exist in this repository.
 
 ### Root Cause
 

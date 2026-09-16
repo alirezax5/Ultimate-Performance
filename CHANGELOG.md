@@ -23,7 +23,7 @@ All notable changes to Ultimate Performance are documented in this file.
   - `uc_amqp_test` (last AMQP connection test result)
   - `uc_oc_action` (last drop-in install/remove action)
 
-- **Plugin uninstall (delete) now removes the legacy `wp-content/cache/ultimate-cache/` directory** too — sites that upgraded from ultimate-cache 0.6.x previously had a leftover cache tree that was never cleaned.
+- **Plugin uninstall (delete) now removes the legacy `wp-content/cache/ultimate-performance/` directory** too — sites that upgraded from ultimate-cache 0.6.x previously had a leftover cache tree that was never cleaned.
 
 - **Plugin uninstall now removes the drop-in files** (`object-cache.php` / `advanced-cache.php`) and the `WP_CACHE` line in `wp-config.php` even when the plugin was deleted via FTP without prior deactivation.
 
@@ -89,7 +89,7 @@ Only the runtime artifacts (cache directory, drop-ins, transients, cron jobs) ar
 ### Added
 
 - `assets/js/admin.js` (real AJAX transport): click handlers for `#uc-test-redis-btn` and `#uc-test-oc-runtime-btn`; fetch-based POST to `/wp-admin/admin-ajax.php`; inline PASS/FAIL rendering; transport-failure block distinct from service-failure block; 3-phase state machine for Object Cache Runtime.
-- `enqueue_assets($hook_suffix)` on AdminPage: gates to Ultimate Performance admin pages (`settings_page_ultimate-cache`, `toplevel_page_ultimate-cache`), registers `ultimate-performance-admin` script with `wp_register_script`, localizes `UC_ADMIN` config (ajaxUrl + per-action nonces + i18n strings) via `wp_localize_script`, cache-busts via `filemtime()`.
+- `enqueue_assets($hook_suffix)` on AdminPage: gates to Ultimate Performance admin pages (`settings_page_ultimate-performance`, `toplevel_page_ultimate-performance`), registers `ultimate-performance-admin` script with `wp_register_script`, localizes `UC_ADMIN` config (ajaxUrl + per-action nonces + i18n strings) via `wp_localize_script`, cache-busts via `filemtime()`.
 - `tests/audit-ajax-runtime.php` (73 checks): invokes each AJAX handler in-process, verifies JSON shape, nonce 403 + capability 403 contracts, internal `_value`/`_group` fields are stripped from the response, `enqueue_assets` gating on non-Ultimate-Cache pages, callback matrix.
 - WP-shim additions: `wp_using_ext_object_cache()`, `wp_generate_password()`, `check_ajax_referer()`, `wp_send_json_success/error()`, `wp_register_script()`, `wp_enqueue_script()`, `wp_localize_script()`, `wp_add_inline_script()`, `plugin_dir_path()`, `get_bloginfo()`, `_e()`, `esc_html_e()`, `esc_attr_e()`, `esc_js()`, `load_plugin_textdomain()`, `get_current_screen()`, `ShimWpdb::$base_prefix`.
 

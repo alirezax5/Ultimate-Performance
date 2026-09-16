@@ -4,7 +4,7 @@
 **Plugin version:** 0.6.2
 **Starting HEAD:** `b2ebbedc9ee8b03239c81219455717bad950a3d3` (0.6.1)
 **Final HEAD:** `84d2a7f2f0bf1336737a23aed2b186fc4065d42e`
-**Release ZIP:** `ultimate-cache-0.6.2.zip` (2.83 MB, 773 files)
+**Release ZIP:** `ultimate-performance-0.6.2.zip` (2.83 MB, 773 files)
 **ZIP SHA-256:** `a5db235c60a9f5a11ed6a1e1360c199580023a9946030c66c44e491bfc28e066`
 **Date:** 2026-09-14
 
@@ -32,7 +32,7 @@ The release ZIP is reproducible from the committed source tree and passes a fres
 
 | Source | Value |
 |--------|-------|
-| Development repo | `/home/z/my-project/work/ultimate-cache-extract` |
+| Development repo | `/home/z/my-project/work/up-current/ultimate-performance` |
 | Starting HEAD | `b2ebbedc9ee8b03239c81219455717bad950a3d3` (0.6.1) |
 | Final HEAD | `84d2a7f2f0bf1336737a23aed2b186fc4065d42e` (0.6.2) |
 | Plugin version (header) | 0.6.2 |
@@ -40,7 +40,7 @@ The release ZIP is reproducible from the committed source tree and passes a fres
 | Readme stable tag | 0.6.2 |
 | POT Project-Id-Version | Ultimate Performance 0.6.2 |
 | CHANGELOG most recent | [0.6.2] |
-| Release ZIP path | `/home/z/my-project/download/ultimate-cache-0.6.2.zip` |
+| Release ZIP path | `/home/z/my-project/download/ultimate-performance-0.6.2.zip` |
 | Release ZIP size | 2,960,117 bytes (2.83 MB) |
 | Release ZIP file count | 773 |
 | Release ZIP SHA-256 | `a5db235c60a9f5a11ed6a1e1360c199580023a9946030c66c44e491bfc28e066` |
@@ -85,7 +85,7 @@ Git HEAD, source tree, and release ZIP all carry identical code. **No deployment
 4. SELECT the configured DB                  ← CRITICAL — was missing
 5. PING                                      ← phase: ping
 6. Write a random temporary key              ← phase: write
-   ultimate-cache:test:{wp_generate_password(12,false)}
+   ultimate-performance:test:{wp_generate_password(12,false)}
    value: uc-redis-ok-{time()}, TTL=60s
 7. Read the key back                          ← phase: read
 8. Delete the key                             ← cleanup
@@ -565,7 +565,7 @@ None of these BLOCKED rows are FAIL. They self-gate to a clean exit 0 when their
 
 ## 17. Fresh-clone proof
 
-A fresh `git clone --depth 1 file:///home/z/my-project/work/ultimate-cache-extract /tmp/uc-fresh-clone` was performed. The fresh clone ran the full regression:
+A fresh `git clone --depth 1 file:///home/z/my-project/work/up-current/ultimate-performance /tmp/uc-fresh-clone` was performed. The fresh clone ran the full regression:
 
 | Source | Suites | PASS | FAIL | SKIP |
 |--------|--------|------|------|------|
@@ -581,15 +581,15 @@ A fresh `git clone --depth 1 file:///home/z/my-project/work/ultimate-cache-extra
 The release ZIP was built by `scripts/build-release-zip.sh`:
 
 ```bash
-git clone --depth 1 file:///home/z/my-project/work/ultimate-cache-extract /tmp/uc-zip-build/ultimate-cache
+git clone --depth 1 file:///home/z/my-project/work/up-current/ultimate-performance /tmp/uc-zip-build/ultimate-performance
 rm -rf .git .gitignore
 rm -rf tests/sandbox   # sandbox is test-only, never shipped
-cd /tmp/uc-zip-build && zip -rq /home/z/my-project/download/ultimate-cache-0.6.2.zip ultimate-cache/
+cd /tmp/uc-zip-build && zip -rq /home/z/my-project/download/ultimate-performance-0.6.2.zip ultimate-performance/
 ```
 
 | Field | Value |
 |-------|-------|
-| Path | `/home/z/my-project/download/ultimate-cache-0.6.2.zip` |
+| Path | `/home/z/my-project/download/ultimate-performance-0.6.2.zip` |
 | Size | 2,960,117 bytes (2.83 MB) |
 | File count | 773 |
 | SHA-256 | `a5db235c60a9f5a11ed6a1e1360c199580023a9946030c66c44e491bfc28e066` |

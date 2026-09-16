@@ -4,7 +4,7 @@
 **Plugin version:** 0.6.2 (unchanged — code-level fix on top of 0.6.2)
 **Starting HEAD:** `2ff135a2e444eafbff916a80a6b690a81377cb1f` (0.6.2 baseline)
 **Final HEAD:** `6c801c3` (after emergency closure)
-**Release ZIP:** `ultimate-cache-0.6.2.zip` (rebuilt, 2.85 MB, 776 files)
+**Release ZIP:** `ultimate-performance-0.6.2.zip` (rebuilt, 2.85 MB, 776 files)
 **ZIP SHA-256:** `be68a71bba675fa9e356fc0c26b61f163ae5c5d724526be2585d09c2afcd7a81`
 **Date:** 2026-09-14
 
@@ -35,7 +35,7 @@ This mission found and fixed the root cause, added a second test button (Test Ob
 | Starting HEAD | `2ff135a2e444eafbff916a80a6b690a81377cb1f` (0.6.2 baseline) |
 | Final HEAD | `6c801c3` (after emergency closure) |
 | Plugin version | 0.6.2 (unchanged) |
-| Release ZIP path | `/home/z/my-project/download/ultimate-cache-0.6.2.zip` |
+| Release ZIP path | `/home/z/my-project/download/ultimate-performance-0.6.2.zip` |
 | Release ZIP size | 2,985,782 bytes (2.85 MB) |
 | Release ZIP file count | 776 |
 | Release ZIP SHA-256 | `be68a71bba675fa9e356fc0c26b61f163ae5c5d724526be2585d09c2afcd7a81` |
@@ -550,7 +550,7 @@ They cannot diverge because both read from the same `Settings::OPTION` option.
 The release ZIP was rebuilt from the final HEAD:
 
 ```text
-Path:     /home/z/my-project/download/ultimate-cache-0.6.2.zip
+Path:     /home/z/my-project/download/ultimate-performance-0.6.2.zip
 Size:     2,985,782 bytes (2.85 MB)
 Files:    776
 SHA-256:  be68a71bba675fa9e356fc0c26b61f163ae5c5d724526be2585d09c2afcd7a81
