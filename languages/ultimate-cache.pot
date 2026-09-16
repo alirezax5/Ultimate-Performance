@@ -1,0 +1,1118 @@
+# Copyright (C) 2026 Ultimate Cache Contributors
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Ultimate Performance 0.6.4\n"
+"Report-Msgid-Bugs-To: https://github.com/alirezax5/ultimate-cache/issues\n"
+"POT-Creation-Date: 2026-09-15 23:43+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: ultimate-cache-pot-gen 1.0\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: src/Admin/AdminPage.php:1161
+msgid "%1$s %2$s cleared (explicit user request)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1147
+msgid "%1$s %2$s preserved (no change)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1154
+msgid "%1$s %2$s set (new value stored)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1168
+msgid "%1$s %2$s updated."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1709
+#: src/Admin/AdminPage.php:1863
+msgid "(requires confirmation)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:100
+msgid "AJAX transport failure"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1657
+msgid "APCu"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2118
+msgid "APCu extension"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1817
+#: src/Admin/AdminPage.php:2043
+msgid "Action Scheduler"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1446
+msgid "Active"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1338
+msgid "Active backend"
+msgstr ""
+
+#: src/Admin/AdminPage.php:138
+#: src/Admin/AdminPage.php:2215
+msgid "Advanced"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1668
+msgid "Always"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1926
+msgid "Apache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1246
+msgid "Authenticate"
+msgstr ""
+
+#: src/Admin/AdminPage.php:336
+msgid "Authentication failed."
+msgstr ""
+
+#: src/Admin/AdminPage.php:388
+msgid "Authentication failed: "
+msgstr ""
+
+#: src/Admin/AdminPage.php:1587
+msgid "Auto (from site hostname)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1820
+#: src/Admin/AdminPage.php:2046
+msgid "Automatic"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1593
+msgid "Automatic prefix: %s"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1827
+msgid "Automatic tries RabbitMQ first, then falls back to Action Scheduler, WP-Cron, and synchronous."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1648
+#: src/Admin/AdminPage.php:1653
+#: src/Admin/AdminPage.php:1658
+#: src/Admin/AdminPage.php:1663
+#: src/Admin/AdminPage.php:2097
+#: src/Admin/AdminPage.php:2111
+#: src/Admin/AdminPage.php:2121
+#: src/Admin/AdminPage.php:2131
+#: src/Admin/AdminPage.php:2141
+msgid "Available"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1519
+msgid "BYPASS (safest)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1640
+msgid "Backend"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1636
+msgid "Backend availability"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2232
+msgid "Bounded waiter budget for stampede protection (in microseconds)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2248
+msgid "Bypass paths"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1521
+msgid "Cache as variants"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1443
+msgid "Cache enabled"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1401
+msgid "Cache mode"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1414
+msgid "Cache not writable"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2083
+msgid "Cache root"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1469
+msgid "Cache root: %s"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1412
+msgid "Cache writable"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1862
+msgid "Clear saved RabbitMQ password"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1708
+msgid "Clear saved Redis password"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2250
+msgid "Comma- or space-separated URL path slugs that bypass the cache (e.g. cart, checkout)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2255
+msgid "Comma- or space-separated query parameter keys included in the cache key (e.g. p, page_id, paged)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1243
+msgid "Configuration"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1992
+msgid "Configure Nginx origin and Nginx listen above, save, then copy the snippet below into your nginx configuration and reload nginx."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1245
+msgid "Connect"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1562
+#: src/Admin/AdminPage.php:875
+msgid "Connected."
+msgstr ""
+
+#: src/Admin/AdminPage.php:391
+msgid "Connection failed: "
+msgstr ""
+
+#: src/Admin/AdminPage.php:328
+msgid "Connection refused."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2243
+msgid "Cookie bypass regex"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1998
+msgid "Copy this into a file included from your http block, then reload nginx and press the verify button."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1565
+msgid "Could not add server."
+msgstr ""
+
+#: src/Admin/AdminPage.php:688
+msgid "Cross-process read failed: "
+msgstr ""
+
+#: src/Admin/AdminPage.php:701
+msgid "Cross-process read returned %s (value is not in persistent backend)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1981
+#: src/Admin/AdminPage.php:2197
+msgid "DNS error."
+msgstr ""
+
+#: src/Admin/AdminPage.php:132
+msgid "Dashboard"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1270
+msgid "Database"
+msgstr ""
+
+#: src/Admin/AdminPage.php:347
+msgid "Database selection failed (db=%d)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2221
+msgid "Debug headers"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1938
+msgid "Detected server"
+msgstr ""
+
+#: src/Admin/AdminPage.php:137
+#: src/Admin/AdminPage.php:2052
+msgid "Diagnostics"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1241
+#: src/Admin/AdminPage.php:1448
+msgid "Disabled"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2222
+msgid "Emit X-Ultimate-Performance-* response headers"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1512
+msgid "Enable PHP fallback for shared hosting"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1491
+msgid "Enable Ultimate Cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1808
+msgid "Enable background invalidation queue"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1583
+msgid "Enable object cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1495
+msgid "Enable page caching"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1241
+msgid "Enabled"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1252
+msgid "Exception"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1641
+msgid "Extension"
+msgstr ""
+
+#: src/Admin/AdminPage.php:99
+msgid "FAIL"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1667
+msgid "File"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1424
+#: src/Admin/AdminPage.php:2064
+msgid "Foreign drop-in"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1436
+#: src/Admin/AdminPage.php:2076
+msgid "Foreign drop-in detected"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1609
+msgid "Foreign drop-in detected — cannot install"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2225
+msgid "Generation lock TTL"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2230
+msgid "Generation wait budget"
+msgstr ""
+
+#: src/Admin/AdminPage.php:101
+msgid "HTTP status"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1530
+msgid "Herd protection"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1262
+msgid "Host"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2227
+msgid "How long a single-flight generation lock is held (flock auto-releases on process death)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1508
+msgid "How long a stale entry may be served while a fresh one is regenerated."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1956
+msgid "IP:port of the PHP origin. Leave empty for shared hosting / PHP fallback mode."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1619
+msgid "Install object-cache.php"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1422
+#: src/Admin/AdminPage.php:1434
+#: src/Admin/AdminPage.php:1607
+#: src/Admin/AdminPage.php:2062
+#: src/Admin/AdminPage.php:2074
+msgid "Installed by Ultimate Cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:215
+#: src/Admin/AdminPage.php:244
+#: src/Admin/AdminPage.php:260
+#: src/Admin/AdminPage.php:430
+#: src/Admin/AdminPage.php:487
+#: src/Admin/AdminPage.php:782
+#: src/Admin/AdminPage.php:804
+#: src/Admin/AdminPage.php:823
+#: src/Admin/AdminPage.php:856
+#: src/Admin/AdminPage.php:888
+#: src/Admin/AdminPage.php:901
+#: src/Admin/AdminPage.php:931
+msgid "Insufficient permissions."
+msgstr ""
+
+#: src/Admin/AdminPage.php:422
+#: src/Admin/AdminPage.php:778
+#: src/Admin/AdminPage.php:800
+#: src/Admin/AdminPage.php:819
+msgid "Invalid nonce."
+msgstr ""
+
+#: src/Admin/AdminPage.php:760
+msgid "Key still readable after delete."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1630
+msgid "Last action: %s"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1694
+#: src/Admin/AdminPage.php:1848
+msgid "Leave blank to keep current"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1706
+#: src/Admin/AdminPage.php:1860
+msgid "Leave blank to preserve current password — blank does NOT delete the stored password."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1961
+msgid "Leave empty for shared hosting / PHP fallback mode."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1927
+msgid "LiteSpeed"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1818
+#: src/Admin/AdminPage.php:2044
+msgid "Local"
+msgstr ""
+
+#: src/Admin/AdminPage.php:584
+msgid "Manager construction failed: "
+msgstr ""
+
+#: src/Admin/AdminPage.php:1490
+msgid "Master switch"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1652
+#: src/Admin/AdminPage.php:1768
+msgid "Memcached"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1786
+msgid "Memcached PHP extension not available — Memcached fields hidden."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2108
+msgid "Memcached extension"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1572
+msgid "Memcached extension not available."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1068
+#: src/Admin/AdminPage.php:1774
+msgid "Memcached host"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1069
+#: src/Admin/AdminPage.php:1778
+msgid "Memcached port"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1929
+msgid "Microsoft IIS"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1648
+#: src/Admin/AdminPage.php:1653
+#: src/Admin/AdminPage.php:1658
+#: src/Admin/AdminPage.php:1663
+#: src/Admin/AdminPage.php:2099
+#: src/Admin/AdminPage.php:2113
+#: src/Admin/AdminPage.php:2123
+#: src/Admin/AdminPage.php:2133
+#: src/Admin/AdminPage.php:2143
+msgid "Missing"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1925
+msgid "Nginx"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1974
+msgid "Nginx integration ACTIVE — verify probe served statically."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2190
+msgid "Nginx integration ACTIVE."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1978
+#: src/Admin/AdminPage.php:2194
+msgid "Nginx integration NOT active — body mismatch."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1979
+#: src/Admin/AdminPage.php:2195
+msgid "Nginx integration NOT active — got redirect."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1977
+#: src/Admin/AdminPage.php:2193
+msgid "Nginx integration NOT active — probe body empty."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1959
+msgid "Nginx listen"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1954
+msgid "Nginx origin"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1968
+msgid "Nginx verify probe"
+msgstr ""
+
+#: src/Admin/AdminPage.php:308
+msgid "No Redis host configured."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1426
+#: src/Admin/AdminPage.php:1438
+#: src/Admin/AdminPage.php:1611
+#: src/Admin/AdminPage.php:2066
+#: src/Admin/AdminPage.php:2078
+msgid "Not installed"
+msgstr ""
+
+#: src/Admin/AdminPage.php:102
+msgid "Not received"
+msgstr ""
+
+#: src/Admin/AdminPage.php:134
+#: src/Admin/AdminPage.php:1575
+msgid "Object Cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1342
+#: src/Admin/AdminPage.php:1586
+msgid "Object Cache Prefix"
+msgstr ""
+
+#: src/Admin/AdminPage.php:766
+msgid "Object Cache Runtime: PASS"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1582
+msgid "Object cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1928
+msgid "OpenLiteSpeed"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1947
+msgid "Optional. These settings are only needed when configuring server-level Nginx acceleration. If you are using shared hosting or do not have access to your Nginx configuration, leave these fields empty. Ultimate Cache can use PHP fallback mode instead."
+msgstr ""
+
+#: src/Admin/AdminPage.php:98
+msgid "PASS"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2245
+msgid "PCRE pattern. Matching cookies force a cache bypass (logged-in users, sessions, carts)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2128
+msgid "PDO SQLite"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1244
+msgid "PHP Extension"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1511
+msgid "PHP fallback"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2055
+msgid "PHP version"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1248
+msgid "PING"
+msgstr ""
+
+#: src/Admin/AdminPage.php:355
+msgid "PING failed: "
+msgstr ""
+
+#: src/Admin/AdminPage.php:133
+#: src/Admin/AdminPage.php:1484
+msgid "Page Cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1494
+msgid "Page cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1703
+#: src/Admin/AdminPage.php:1857
+msgid "Password configured: no"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1703
+#: src/Admin/AdminPage.php:1857
+msgid "Password configured: yes (will be preserved when this field is left blank)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1278
+#: src/Admin/AdminPage.php:1363
+msgid "Phase"
+msgstr ""
+
+#: src/Admin/AdminPage.php:644
+msgid "Phase 1 (write test object) PASS — proceed to Phase 2."
+msgstr ""
+
+#: src/Admin/AdminPage.php:95
+msgid "Phase 1: write test object..."
+msgstr ""
+
+#: src/Admin/AdminPage.php:711
+msgid "Phase 2 (cross-request wp_cache_get) PASS — proceed to Phase 3."
+msgstr ""
+
+#: src/Admin/AdminPage.php:673
+msgid "Phase 2 requires a token from Phase 1."
+msgstr ""
+
+#: src/Admin/AdminPage.php:96
+msgid "Phase 2: verify cross-request read..."
+msgstr ""
+
+#: src/Admin/AdminPage.php:742
+msgid "Phase 3 requires a token from Phase 1."
+msgstr ""
+
+#: src/Admin/AdminPage.php:97
+msgid "Phase 3: delete test object..."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1266
+msgid "Port"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1334
+msgid "Preferred backend"
+msgstr ""
+
+#: src/Admin/AdminPage.php:599
+msgid "Preferred backend is %1$s but no persistent backend is healthy (active = %2$s)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1588
+msgid "Prefix used to isolate this site\\'s object-cache keys. Leave empty to automatically use the site hostname."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2239
+msgid "Preload batch size"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2235
+msgid "Preload concurrency"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1455
+msgid "Purge"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1118
+msgid "Purge aborted — confirmation checkbox missing."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1461
+msgid "Purge entire page cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1456
+msgid "Purge the ENTIRE public page cache?"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1122
+msgid "Purged %d cache entries."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2253
+msgid "Query allowlist"
+msgstr ""
+
+#: src/Admin/AdminPage.php:135
+#: src/Admin/AdminPage.php:1807
+msgid "Queue"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1801
+msgid "Queue / Background Jobs"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1811
+#: src/Admin/AdminPage.php:2151
+msgid "Queue backend"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1816
+#: src/Admin/AdminPage.php:1832
+#: src/Admin/AdminPage.php:2042
+msgid "RabbitMQ"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1074
+#: src/Admin/AdminPage.php:1873
+msgid "RabbitMQ exchange"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1070
+#: src/Admin/AdminPage.php:1835
+msgid "RabbitMQ host"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2138
+msgid "RabbitMQ library"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1075
+#: src/Admin/AdminPage.php:1847
+msgid "RabbitMQ password"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1071
+#: src/Admin/AdminPage.php:1839
+msgid "RabbitMQ port"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1072
+msgid "RabbitMQ user"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1843
+msgid "RabbitMQ username"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1073
+#: src/Admin/AdminPage.php:1869
+msgid "RabbitMQ vhost"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1250
+msgid "Read Test Key"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1647
+#: src/Admin/AdminPage.php:1675
+msgid "Redis"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1764
+msgid "Redis PHP extension not available — Redis fields hidden."
+msgstr ""
+
+#: src/Admin/AdminPage.php:313
+msgid "Redis PHP extension not available."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1066
+#: src/Admin/AdminPage.php:1715
+msgid "Redis TLS"
+msgstr ""
+
+#: src/Admin/AdminPage.php:380
+msgid "Redis connection successful."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1065
+#: src/Admin/AdminPage.php:1689
+msgid "Redis database"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2094
+msgid "Redis extension"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1063
+#: src/Admin/AdminPage.php:1681
+msgid "Redis host"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1067
+#: src/Admin/AdminPage.php:1693
+msgid "Redis password"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1064
+#: src/Admin/AdminPage.php:1685
+msgid "Redis port"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1626
+msgid "Remove object-cache.php"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2157
+msgid "Run live connectivity probes using the settings saved in the other tabs."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1322
+msgid "Runtime Test Result"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1247
+msgid "SELECT Database"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1662
+msgid "SQLite"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1506
+msgid "SWR grace (seconds)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2258
+msgid "Save Advanced Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1782
+msgid "Save Memcached Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1964
+msgid "Save Nginx Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1598
+msgid "Save Object Cache Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1534
+msgid "Save Page Cache Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1879
+msgid "Save Queue Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1719
+msgid "Save Redis Settings"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1409
+msgid "Self-test"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1503
+msgid "Serve stale up to grace window"
+msgstr ""
+
+#: src/Admin/AdminPage.php:136
+#: src/Admin/AdminPage.php:1934
+msgid "Server Integration"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1980
+#: src/Admin/AdminPage.php:2196
+msgid "Server UNREACHABLE."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1942
+msgid "Serving mode"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1563
+msgid "Set/get round-trip failed."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1059
+#: src/Admin/AdminPage.php:1085
+#: src/Admin/AdminPage.php:1090
+msgid "Settings saved."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1531
+msgid "Single-flight cache generation (prevents stampedes)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1502
+msgid "Stale-while-revalidate"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1604
+msgid "State"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1642
+msgid "Status"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1398
+msgid "Status Overview"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1520
+msgid "Strip from key"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1819
+#: src/Admin/AdminPage.php:2045
+msgid "Synchronous"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1274
+msgid "TLS"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1982
+#: src/Admin/AdminPage.php:2198
+msgid "TLS error."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1498
+msgid "TTL (seconds)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1756
+#: src/Admin/AdminPage.php:94
+msgid "Test Object Cache Runtime"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2176
+msgid "Test RabbitMQ"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1888
+msgid "Test RabbitMQ Connection"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2168
+msgid "Test Redis"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1735
+#: src/Admin/AdminPage.php:93
+msgid "Test Redis Connection"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1258
+msgid "Test Result"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2156
+msgid "Test buttons"
+msgstr ""
+
+#: src/Admin/AdminPage.php:372
+msgid "Test key read-back mismatch."
+msgstr ""
+
+#: src/Admin/AdminPage.php:365
+msgid "Test key write failed."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1283
+#: src/Admin/AdminPage.php:1369
+msgid "Tested at"
+msgstr ""
+
+#: src/Admin/AdminPage.php:92
+msgid "Testing..."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1996
+msgid "The generator refused the current inputs (fail-closed) — check the origin/listen format and the site host."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1983
+#: src/Admin/AdminPage.php:2199
+msgid "Timeout."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1007
+#: src/Admin/AdminPage.php:111
+#: src/Admin/AdminPage.php:112
+msgid "Ultimate Performance"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1930
+msgid "Unknown"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1515
+msgid "Unknown query params"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1986
+#: src/Admin/AdminPage.php:2202
+msgid "Unknown: %s"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1716
+msgid "Use TLS"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1096
+msgid "Validation failed — check the fields below:"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1251
+msgid "Verified"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2183
+msgid "Verify Nginx"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1976
+#: src/Admin/AdminPage.php:2192
+msgid "Verify failed: could not write the probe file."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2004
+msgid "Verify nginx integration"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2191
+msgid "Verify skipped: configure Nginx origin + listen first."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1975
+msgid "Verify skipped: configure the Nginx origin + listen first."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1815
+#: src/Admin/AdminPage.php:2041
+msgid "WP-Cron"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2057
+msgid "WP_CACHE"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1405
+#: src/Admin/AdminPage.php:2056
+msgid "Web server"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2054
+msgid "WordPress version"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1249
+msgid "Write Test Key"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1419
+#: src/Admin/AdminPage.php:2059
+msgid "advanced-cache.php"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2231
+msgid "microseconds"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2089
+msgid "not writable"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1431
+#: src/Admin/AdminPage.php:2071
+msgid "object-cache.php"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1330
+#: src/Admin/AdminPage.php:1601
+msgid "object-cache.php drop-in"
+msgstr ""
+
+#: src/Admin/AdminPage.php:565
+msgid "object-cache.php is %s (not ours)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1891
+#: src/Admin/AdminPage.php:867
+msgid "php-amqplib library not available."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2226
+msgid "seconds"
+msgstr ""
+
+#: src/Admin/AdminPage.php:2056
+msgid "unknown"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1358
+msgid "wp_cache_delete"
+msgstr ""
+
+#: src/Admin/AdminPage.php:751
+msgid "wp_cache_delete() returned false."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1354
+msgid "wp_cache_get (cross-process)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:1350
+msgid "wp_cache_get (same process)"
+msgstr ""
+
+#: src/Admin/AdminPage.php:625
+msgid "wp_cache_get() returned %s (expected the set value)."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1346
+msgid "wp_cache_set"
+msgstr ""
+
+#: src/Admin/AdminPage.php:614
+msgid "wp_cache_set() returned false."
+msgstr ""
+
+#: src/Admin/AdminPage.php:1326
+msgid "wp_using_ext_object_cache"
+msgstr ""
+
+#: src/Admin/AdminPage.php:553
+msgid "wp_using_ext_object_cache() is false — drop-in not active."
+msgstr ""
+
+#: src/Admin/AdminPage.php:2087
+msgid "writable"
+msgstr ""

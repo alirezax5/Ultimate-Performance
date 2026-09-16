@@ -1,0 +1,30 @@
+# BEGIN Ultimate Performance Storage (auto-generated - do not edit)
+Options -Indexes
+<FilesMatch "^(?!index\.html$)">
+       <IfModule mod_authz_core.c>
+           Require all denied
+    </IfModule>
+   <IfModule !mod_authz_core.c>
+          Order allow,deny
+              Deny from all
+ </IfModule>
+</FilesMatch>
+<FilesMatch "(?i)\.(php|phtml|phar|json|jsonl|lock|tmp|log|txt|md|idx|data|serialize|queue|tag|sqlite|db)$">
+       <IfModule mod_authz_core.c>
+           Require all denied
+    </IfModule>
+   <IfModule !mod_authz_core.c>
+          Order allow,deny
+              Deny from all
+ </IfModule>
+</FilesMatch>
+<FilesMatch "(?i)^\.">
+       <IfModule mod_authz_core.c>
+           Require all denied
+    </IfModule>
+   <IfModule !mod_authz_core.c>
+          Order allow,deny
+              Deny from all
+ </IfModule>
+</FilesMatch>
+# END Ultimate Performance Storage

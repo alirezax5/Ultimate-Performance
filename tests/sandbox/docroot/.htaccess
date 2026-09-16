@@ -1,0 +1,53 @@
+# BEGIN Ultimate Performance
+# Ultimate Performance early-serve. Managed block - edits inside are lost.
+Options -MultiViews
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{ENV:UC_SERVED} =1
+RewriteRule ^ - [S=3]
+RewriteCond %{HTTP_COOKIE} (wordpress_[a-f0-9]{32}|wordpress_logged_in_[a-f0-9]{32}|wordpress_sec_[a-f0-9]{32}|wp-postpass|comment_author_[a-f0-9]{32}|woocommerce_cart_hash|woocommerce_items_in_cart|wp_woocommerce_session_) [NC]
+RewriteRule ^ - [S=2]
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{QUERY_STRING} ^$
+RewriteCond %{REQUEST_URI} !(\\|\.\.|%00|%0d|%0a|\.php$|\.json$|\.xml$|\.phar$|\.phtml$) [NC]
+RewriteCond %{REQUEST_URI} !^/wp-admin
+RewriteCond %{REQUEST_URI} !^/wp-json
+RewriteCond %{REQUEST_URI} !^/xmlrpc.php
+RewriteCond %{REQUEST_URI} !^/wp-login.php
+RewriteCond %{REQUEST_URI} !^/wp-cron.php
+RewriteCond %{REQUEST_URI} !^/feed
+RewriteCond %{REQUEST_URI} !^/wp-content/plugins
+RewriteCond %{REQUEST_URI} !^/wp-content/themes
+RewriteCond %{REQUEST_URI} !^/wp-content/cache
+RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/ultimate-performance/v/example.com/uc-root/index.html -f
+RewriteRule ^$ /wp-content/cache/ultimate-performance/v/example.com/uc-root/index.html [L,E=UC_SERVED:1]
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{QUERY_STRING} ^$
+RewriteCond %{REQUEST_URI} !(\\|\.\.|%00|%0d|%0a|\.php$|\.json$|\.xml$|\.phar$|\.phtml$) [NC]
+RewriteCond %{REQUEST_URI} !^/wp-admin
+RewriteCond %{REQUEST_URI} !^/wp-json
+RewriteCond %{REQUEST_URI} !^/xmlrpc.php
+RewriteCond %{REQUEST_URI} !^/wp-login.php
+RewriteCond %{REQUEST_URI} !^/wp-cron.php
+RewriteCond %{REQUEST_URI} !^/feed
+RewriteCond %{REQUEST_URI} !^/wp-content/plugins
+RewriteCond %{REQUEST_URI} !^/wp-content/themes
+RewriteCond %{REQUEST_URI} !^/wp-content/cache
+RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/ultimate-performance/v/example.com/$1/index.html -f
+RewriteRule ^(.+?)/?$ /wp-content/cache/ultimate-performance/v/example.com/$1/index.html [L,B,E=UC_SERVED:1]
+</IfModule>
+<FilesMatch "\.(meta\.json|lock|tmp|log|jsonl|data|serialize)$">
+	<IfModule mod_authz_core.c>
+		Require all denied
+	</IfModule>
+</FilesMatch>
+# END Ultimate Performance
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>

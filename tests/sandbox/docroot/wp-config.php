@@ -1,0 +1,2 @@
+<?php
+// UC-DO-NOT-LEAK-WPCONFIG-7f3a9c

@@ -1,0 +1,1 @@
+WP-FRONT-CONTROLLER-REACHED uri=<?php echo $_SERVER["REQUEST_URI"]; ?>

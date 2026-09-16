@@ -1,0 +1,10 @@
+{
+    "name": "ultimate-cache/plugin",
+    "description": "Ultimate Performance WordPress plugin (dev vendoring)",
+    "require": {
+        "php-amqplib/php-amqplib": "^3.6"
+    },
+    "config": {
+        "platform-check": false
+    }
+}
