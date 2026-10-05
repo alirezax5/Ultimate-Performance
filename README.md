@@ -2,7 +2,7 @@
 
 **Production-grade WordPress caching with zero-PHP page-cache HITs and a promotion-fenced object cache.**
 
-`Status: 0.6.9 — final release · Persian (fa_IR) localization · Hybrid (Best) mode verified · 18/18 security tests PASS · 2.28× speedup vs PHP Compatibility`
+`Status: 0.7.3 — final release · Persian (fa_IR) localization · Hybrid (Best) mode verified · 18/18 security tests PASS · 2.28× speedup vs PHP Compatibility`
 
 English | [فارسی](#فارسی)
 
