@@ -2,6 +2,141 @@
 
 All notable changes to Ultimate Performance are documented in this file.
 
+## [0.7.3] — 2026-09-22
+
+### Fixed (Critical — Fail-Closed Lock Semantics)
+
+- **CRITICAL FIX: Lock acquisition now fails closed when $wpdb is unavailable.**
+  The 0.7.2 `cas_takeover()` had a fallback to `update_option()` when $wpdb
+  was unavailable, returning $owner as if the lock was acquired. This was
+  fail-open: a non-atomic fallback for a lock that exists to provide atomicity.
+  The locking contract requires: acquire success PROVES exclusive ownership.
+  Without $wpdb, we cannot perform the CAS UPDATE, so we cannot prove
+  ownership, so we must FAIL (return false).
+
+- **CRITICAL FIX: Lock release now fails closed when $wpdb is unavailable.**
+  The 0.7.2 `release_lock()` had a fallback to `delete_option()` when $wpdb
+  was unavailable. This was non-atomic and could delete a lock belonging to
+  another process. The 0.7.3 fix leaves the lock in place — TTL/stale
+  recovery will handle it later. Safety over eager cleanup.
+
+### Rationale
+
+For a concurrency lock, loss of the atomic primitive must FAIL CLOSED:
+- **acquire**: if we cannot atomically claim ownership, we must return false
+- **release**: if we cannot atomically prove we still own the lock, we must leave it
+
+No non-atomic fallback exists in any lock ownership transition.
+
+### Schema Version
+
+CRON_SCHEMA_VERSION remains at 1. This change affects lock implementation only,
+not persisted cron schema.
+
+## [0.7.2] — 2026-09-22
+
+### Fixed (Critical — Atomic Stale-Lock Takeover)
+
+- **CRITICAL FIX: Stale-lock takeover is now truly atomic.** The 0.7.1 implementation
+  used `update_option()` for stale-lock takeover, which is NOT a compare-and-swap
+  operation. 50-process testing proved 44/50 processes could simultaneously "acquire"
+  the same expired lock. The 0.7.2 fix uses a direct SQL UPDATE with a WHERE clause
+  that checks the exact old value (`UPDATE wp_options SET ... WHERE option_value = OLD`),
+  so only the FIRST process can succeed. All others affect 0 rows and correctly fail.
+
+- **CRITICAL FIX: Lock release is now truly owner-safe.** The 0.7.1 release_lock()
+  used `get_option() → check owner → delete_option()`, which is a check-then-delete
+  TOCTOU race. A stale former owner could delete a new owner's lock if the lock
+  expired and was taken over between the check and the delete. The 0.7.2 fix uses
+  a conditional DELETE (`DELETE FROM wp_options WHERE option_name=X AND option_value=OLD`),
+  so only the current owner can delete their own lock.
+
+### Added
+
+- `cas_takeover()` private method: encapsulates the CAS UPDATE logic with cache
+  invalidation (`wp_cache_delete` for both individual option and alloptions caches).
+
+### Object-Cache Coherency
+
+After successful CAS UPDATE, WordPress option caches are explicitly invalidated:
+- `wp_cache_delete($option, 'options')` — removes the individual option cache
+- `wp_cache_delete('alloptions', 'options')` — forces alloptions reload (defensive,
+  since non-autoload options shouldn't be in alloptions, but we invalidate anyway)
+
+This ensures `get_option()` calls after CAS see the new owner, not the stale value.
+
+### Schema Version
+
+CRON_SCHEMA_VERSION remains at '1'. The lock implementation change does NOT change
+persisted cron schema — only the locking mechanism used during repair. Production
+sites with schema version '1' will NOT trigger a redundant migration.
+
+## [0.7.1] — 2026-09-22
+
+### Fixed (Critical — CronGuard follow-ups)
+
+- **Issue #1: cron event args preserved during unscheduling.** `CronGuard::events_for()` previously captured only `(ts, key)` from each cron instance — but the `$key` is `md5(serialize($args))` and the `$instance` array also carries `args`. Without `args`, callers had no way to pass the correct args to `wp_unschedule_event()`, which identifies events by the `(timestamp, hook, args)` tuple. The fix:
+  - `events_for()` now captures the `args` from `$instance['args']` (defaulting to `array()` when missing).
+  - `repair()` passes `$ev['args']` to `wp_unschedule_event()`, so events scheduled WITH args are correctly matched and removed.
+  - The `repair()` return shape now reports `attempted_removals`, `successful_removals`, and `failed_removals` separately. The `removed` key is kept as a back-compat alias for `successful_removals` so `AdminPage.php`, `WpCliCommands.php`, and the audit suite continue to read `$stats['removed']` without code changes.
+- **Issue #2: atomic repair lock.** The previous transient check-then-set pattern (`if (false !== get_transient($lock)) return; set_transient($lock, 1, 60);`) was non-atomic — two concurrent admin requests could both see "no lock" and both run `repair()` on the same cron option. Replaced with a new `acquire_lock()` / `release_lock()` pair that uses `add_option()` for database-level atomicity on MySQL (INSERT ... UNIQUE-key-equivalent failure). Stale locks left by a crashed process are taken over after the 60s TTL expires. The release path is owner-safe: a process only deletes the option if its own owner token is still the stored owner, so a slow process that exceeded the TTL does not delete a lock that has been taken over by another process. The old `REPAIR_LOCK_TRANSIENT` and `REPAIR_LOCK_TTL` constants are removed; the new constants are `LOCK_OPTION_PREFIX = 'up_cron_lock_'` and `LOCK_TTL = 60`.
+- **Issue #3: deterministic callback identity.** The daily canonical hooks (`HOOK_JANITOR`, `HOOK_WARMUP`, `HOOK_TELEMETRY`) were bound to a NEW anonymous Closure on every call to `register_callbacks()`. Because every Closure has a different `spl_object_hash`, `has_action($hook, $cb)` could NEVER match a previously-registered Closure, so the callback was registered repeatedly — once per request — slowly inflating the `wp_filter[hook]` table. Replaced with three new public static methods `run_janitor()`, `run_warmup()`, `run_telemetry()` and a deterministic `array(__CLASS__, 'method_name')` callback identity. `has_action()` correctly recognizes the prior registration and prevents duplicates.
+
+### Added
+
+- `CronGuard::run_janitor()`, `CronGuard::run_warmup()`, `CronGuard::run_telemetry()` — public static per-hook entry points bound to each canonical daily action. Used as deterministic callbacks by `register_callbacks()`.
+- `CronGuard::acquire_lock($purpose = 'repair')` — private static atomic lock helper (returns the owner token on success, `false` if held).
+- `CronGuard::release_lock($purpose, $owner)` — private static owner-safe lock releaser.
+
+### Changed
+
+- `CronGuard::events_for()` — return shape now includes `args` per event (`array{ts:int, key:string, args:array<mixed>}`).
+- `CronGuard::repair()` — return shape now includes `attempted_removals`, `successful_removals`, `failed_removals` (the `removed` key is kept as a back-compat alias).
+- `CronGuard::repair()` — calls `wp_unschedule_event($ev['ts'], $hook, $ev['args'])` instead of `wp_unschedule_event($ev['ts'], $hook)`.
+- `CronGuard::register_callbacks()` — replaced anonymous Closure callbacks with deterministic `array(__CLASS__, 'method')` callbacks.
+- `CronGuard::deactivate()` — releases the atomic repair lock option (`up_cron_lock_repair`) instead of the old transient.
+- `ultimate-performance.php` and `readme.txt` — version bumped to 0.7.1.
+
+### Tests
+
+- `tests/audit-cron-dedup.php` — extended with new scenarios for:
+  - `events_for()` returns the `args` field per event.
+  - `wp_unschedule_event()` is called with the correct `args` for events scheduled with args.
+  - `register_callbacks()` called 100 times still has exactly 1 callback per canonical hook (deterministic identity).
+  - The atomic lock (acquire / release / stale-takeover / owner-safe-no-release).
+  - The new `attempted_removals` / `successful_removals` / `failed_removals` stats counters in `repair()`.
+
+## [0.7.0] — 2026-09-20
+
+
+### Fixed (Critical — WP-Cron deduplication / CronGuard)
+
+- **Eliminated the per-request cron-scheduling self-DoS.** Three independent code paths (`QueueManager::boot()`, `WPCron::enqueue()`, `Scheduler::register()`) used the non-atomic `if (!wp_next_scheduled()) { wp_schedule_event(); }` pattern on every WordPress request, producing ~5,660 duplicate cron events and a 1.26MB `cron` option that was rewritten on every ~3 seconds on production. The new `UltimatePerformance\Core\CronGuard` class is the SINGLE source of truth for all UP-owned cron scheduling; every operation is idempotent, deduplicated, and transient-gated so steady-state requests perform zero cron-option writes.
+- **Bound the daily canonical cron hooks** (`ultimate_cache/janitor_tick`, `ultimate_cache/warmup_tick`, `ultimate_cache/telemetry_tick`) — these were scheduled by `Scheduler::register()` but had NO `add_action` callbacks registered, so they were dead hooks that fired into the void. `CronGuard::register_callbacks()` now binds each to a `CronGuard::run_single_job()` callback that runs the corresponding Scheduler job and self-perpetuates exactly one next off-peak occurrence.
+- **Removed the dead `ultimate_performance_janitor` and `ultimate_performance_telemetry` hooks** scheduled by the legacy `migrate_uc_to_up_brand()` cron-rescheduling block. These hooks had no callbacks and were rebranded to the canonical daily hooks. `CronGuard::repair()` clears them entirely on the first post-upgrade request.
+- **Idempotent activation.** `Installer::activate()` now calls `CronGuard::activate()`, which schedules every canonical hook exactly once (no DB write for hooks that are already correctly scheduled). Repeated activation is a no-op for scheduling.
+- **Clean deactivation + uninstall.** `Installer::deactivate()` and `Installer::uninstall_data()` now delegate to `CronGuard::deactivate()`, which clears ALL six known UP hooks (4 canonical + 2 dead) so no scheduled work is left for an inactive plugin.
+- **Schema-driven migration.** `CronGuard::maybe_migrate()` checks the `ultimate_performance_cron_schema_version` option and runs `repair()` once per schema bump. Sites that upgrade from 0.6.9 carrying thousands of duplicate cron events self-heal on the first request after upgrade — no admin interaction required.
+- **Concurrency-safe repair.** `CronGuard::repair()` is gated by a 60-second transient lock so concurrent admin requests (or admin + WP-CLI) cannot race the same repair.
+
+### Added
+
+- `src/Core/CronGuard.php` — the single-source-of-truth cron scheduler. Public API: `activate()`, `deactivate()`, `ensure_scheduled()`, `ensure_single_event()`, `repair()`, `get_status()`, `maybe_migrate()`, `register_callbacks()`, `canonical_hooks()`, `owned_hooks()`.
+- **WP-Cron Health panel on the Diagnostics admin tab.** Shows a per-hook table: hook name, expected count, actual scheduled count, next execution, recurrence, status (Healthy / Missing / Duplicate / Stray). Includes a "Repair Ultimate Performance Cron Events" button (POST + nonce + capability check) that runs `CronGuard::repair()` and shows before/after stats. Also surfaces the WP-Cron option byte-size so admins can verify repair reduced the option footprint.
+- **WP-CLI commands:**
+  - `wp ultimate-performance cron status [--format=table|json|csv|yaml]` — show cron health per UP-owned hook.
+  - `wp ultimate-performance cron repair [--format=table|json]` — run `CronGuard::repair()` and print before/after stats.
+- **`tests/audit-cron-dedup.php`** — 17-scenario regression suite covering fresh activation, repeated activation, repeated bootstrap, multiple simulated requests, callback rescheduling, settings saves, interval change, telemetry toggle, deactivation, reactivation, upgrade-from-0.6.9 with thousands of duplicates, repeated repair, unrelated-cron preservation, malformed-event cleanup, missing-event recreation, dead-hook removal, and cron-option size reduction.
+
+### Changed
+
+- `src/Queue/QueueManager.php` — `boot()` no longer schedules `ultimate_performance_tick`. It only registers the `cron_schedules` filter and the `ultimate_performance_tick` / `ultimate_performance_as_job` action callbacks (idempotent, no DB writes). CronGuard handles scheduling.
+- `src/Queue/BackendImpl/WPCron.php` — `enqueue()` calls `CronGuard::ensure_single_event('ultimate_performance_tick', 30)` instead of the legacy `wp_next_scheduled()` + `wp_schedule_single_event()` pair. Falls back to the legacy pattern if CronGuard is unavailable.
+- `src/Core/Scheduler.php` — `register()` no longer schedules the daily canonical hooks. It delegates to `CronGuard::ensure_scheduled()` (kept for back-compat with audit suites that called it directly). New public method `run_single_job($hook)` is the per-hook entry point bound by CronGuard to each canonical daily action — it runs the Scheduler job (backpressure-guarded, bounded runtime) and CronGuard handles the rescheduling.
+- `src/Core/Plugin.php` — `late_boot()` now calls `CronGuard::register_callbacks()`, `CronGuard::maybe_migrate()`, and `CronGuard::ensure_scheduled()`. The legacy `(new Scheduler())->register()` block is replaced by these calls.
+- `src/Core/Installer.php` — `activate()` calls `CronGuard::activate()`. `deactivate()` and `uninstall_data()` call `CronGuard::deactivate()`. `migrate_uc_to_up_brand()` no longer runs the cron rescheduling (STEP 3) — CronGuard handles canonical scheduling and dead-hook removal.
+- `ultimate-performance.php` and `readme.txt` — version bumped to 0.7.0.
+
 ## [0.6.5] — 2026-09-16
 
 ### Fixed (Critical — Deactivation Cleanup)

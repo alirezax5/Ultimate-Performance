@@ -265,15 +265,37 @@ function wp_cache_flush_group( $group ) {
 function wp_next_scheduled( $hook ) {
         return shim_next_scheduled( $hook );
 }
-function wp_schedule_event( $ts, $recurrence, $hook ) {
-        return shim_schedule_event( $ts, $recurrence, $hook );
+function wp_schedule_event( $ts, $recurrence, $hook, $args = array() ) {
+        return shim_schedule_event( $ts, $recurrence, $hook, $args );
 }
-function wp_schedule_single_event( $ts, $hook ) {
-        return shim_schedule_event( $ts, 'single', $hook );
+function wp_schedule_single_event( $ts, $hook, $args = array() ) {
+        return shim_schedule_event( $ts, 'single', $hook, $args );
 }
 function wp_clear_scheduled_hook( $hook ) {
         return shim_clear_scheduled_hook( $hook );
 }
+
+// Phase 0.7.0 — CronGuard reads the cron array via _get_cron_array() and
+// unschedules individual events via wp_unschedule_event(). The shim needs
+// implementations consistent with the cron.json state file (so cross-process
+// tests see the same DB).
+function _get_cron_array() {
+        return shim_cron_array();
+}
+
+function wp_unschedule_event( $timestamp, $hook, $args = array() ) {
+        return shim_unschedule_event( $timestamp, $hook, $args );
+}
+
+function wp_get_schedules() {
+        return array(
+                'hourly'         => array( 'interval' => 3600,  'display' => 'Once Hourly' ),
+                'twicedaily'     => array( 'interval' => 43200, 'display' => 'Twice Daily' ),
+                'daily'          => array( 'interval' => 86400, 'display' => 'Once Daily' ),
+                'up_every_minute'=> array( 'interval' => 60,    'display' => 'Ultimate Performance every minute' ),
+        );
+}
+
 
 // Activation / plugin plumbing for the REAL entrypoint (audit-boot).
 function register_activation_hook( $file, $cb ) {

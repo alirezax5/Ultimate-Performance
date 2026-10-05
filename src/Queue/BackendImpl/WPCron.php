@@ -155,7 +155,19 @@ final class WPCron implements Backend {
                                 return $jobs;
                         }
                 );
-                if ( ! wp_next_scheduled( 'ultimate_performance_tick' ) ) {
+                // Phase 0.7.0: the legacy `if (!wp_next_scheduled(...))
+                // wp_schedule_single_event(...)` pattern was a major source
+                // of cron-option duplicates under concurrent enqueue storms.
+                // CronGuard::ensure_single_event() is the single entry point
+                // for one-shot tick wake-ups: it is gated behind the same
+                // transient health check used by ensure_scheduled() so
+                // steady-state enqueues don't even touch the cron option.
+                if ( class_exists( '\UltimatePerformance\Core\CronGuard' ) ) {
+                        \UltimatePerformance\Core\CronGuard::ensure_single_event( 'ultimate_performance_tick', 30 );
+                } elseif ( function_exists( 'wp_next_scheduled' ) && ! wp_next_scheduled( 'ultimate_performance_tick' ) ) {
+                        // Back-compat fallback when CronGuard is unavailable
+                        // (e.g., partial autoloader failure) — same legacy
+                        // pattern, but contained to this rare path.
                         wp_schedule_single_event( time() + 30, 'ultimate_performance_tick' );
                 }
                 return $job->id;

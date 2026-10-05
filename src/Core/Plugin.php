@@ -76,11 +76,22 @@ final class Plugin {
          * AdminPage::register() only adds admin_menu/enqueue/admin_post_*.
          */
         public function late_boot() {
-                // Phase K: WP-Cron scheduler
+                // Phase 0.7.0: CronGuard is the SINGLE source of truth for
+                // UP-owned cron scheduling. ensure_scheduled() is transient-gated
+                // (300s TTL) so a healthy site performs zero cron-option writes
+                // on the ~299/300 requests that hit the gate. maybe_migrate()
+                // runs repair() once per schema bump — this is how an upgrade
+                // from a 0.6.x install carrying thousands of duplicate cron
+                // events self-heals on the first request after upgrade.
                 try {
-                        require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/Scheduler.php';
-                        ( new Scheduler() )->register();
+                        require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/CronGuard.php';
+                        CronGuard::register_callbacks();
+                        CronGuard::maybe_migrate();
+                        CronGuard::ensure_scheduled();
                 } catch ( \Throwable $e ) { // phpcs:ignore Squiz.Commenting
+                        if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+                                error_log( 'Ultimate Performance: CronGuard bootstrap failed: ' . $e->getMessage() );
+                        }
                 }
 
                 // WC-PROD-LIFECYCLE (Phase 1 — Delete Product Defect):

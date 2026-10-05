@@ -85,14 +85,25 @@ update_option( 'timezone_string', 'Asia/Tehran' );
 // =====================================================================
 $first  = $sched->register( $before_window );
 $second = $sched->register( $before_window + 1 );
-ccheck( $results, 'C3 first register books all hooks', count( $first ) === 3, 'got=' . count( $first ) );
-ccheck( $results, 'C3 second register is a no-op (dedup)', 0 === count( $second ) );
+ccheck( $results, 'C3 first register delegates to CronGuard (returns [] — scheduling moved)', 0 === count( $first ), 'got=' . count( $first ) );
+ccheck( $results, 'C3 second register is still a no-op', 0 === count( $second ) );
 $store = is_file( ABSPATH . 'state/cron.json' ) ? json_decode( (string) file_get_contents( ABSPATH . 'state/cron.json' ), true ) : array();
-$dup_free = true;
-foreach ( (array) $store as $hook => $occ ) {
-        if ( is_array( $occ ) && count( $occ ) > 1 ) { $dup_free = false; }
+// Phase 0.7.0 — store shape is now real-WP: [ts => [hook => [args_key => array]]].
+// A "duplicate" is any hook with >1 scheduled instance across all ts.
+$per_hook_counts = array();
+if ( is_array( $store ) ) {
+        foreach ( $store as $ts => $hooks_at_ts ) {
+                if ( ! is_array( $hooks_at_ts ) ) { continue; }
+                foreach ( $hooks_at_ts as $hook => $instances ) {
+                        $per_hook_counts[ $hook ] = ( $per_hook_counts[ $hook ] ?? 0 ) + ( is_array( $instances ) ? count( $instances ) : 1 );
+                }
+        }
 }
-ccheck( $results, 'C3 cron store holds one occurrence per hook', $dup_free );
+$dup_free = true;
+foreach ( $per_hook_counts as $cnt ) {
+        if ( $cnt > 1 ) { $dup_free = false; }
+}
+ccheck( $results, 'C3 cron store holds at most one occurrence per hook', $dup_free );
 
 // =====================================================================
 // C4: dispatch due hooks (injected recording jobs) + self-reschedule.

@@ -146,3 +146,5 @@ run_suite audit-storefront-invalidation tests/audit-storefront-invalidation.php
 
 # WC-PROD-LIFECYCLE — product lifecycle cache invalidation
 run_suite audit-woo-product-invalidation tests/audit-woo-product-invalidation.php
+# Phase 0.7.0 — CronGuard deduplication & idempotency (17 scenarios)
+run_suite audit-cron-dedup        tests/audit-cron-dedup.php

@@ -30,6 +30,16 @@ final class Installer {
                         $admin->add_cap( self::CAP_PURGE_ALL );
                 }
 
+                // Phase 0.7.0: CronGuard is the SINGLE source of truth for all
+                // UP-owned cron scheduling. The old activate() left scheduling
+                // to QueueManager::boot() and Scheduler::register(), both of
+                // which were called on EVERY request — producing thousands
+                // of duplicate cron events on production. CronGuard::activate()
+                // is idempotent: calling it twice yields exactly one scheduled
+                // event per canonical hook.
+                require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/CronGuard.php';
+                CronGuard::activate();
+
                 // §0.6.6: rebrand migration — upgrade sites that installed
                 // pre-0.6.6 (which used the 'uc_' / 'UltimateCache' brand) to
                 // the new 'up_' / 'Ultimate Performance' brand. Idempotent:
@@ -252,9 +262,13 @@ final class Installer {
                 // and programmatic deactivation (wp-cli, REST, automated tests,
                 // multisite network-admin bulk-deactivate, etc.) which all run
                 // without a logged-in user in the request scope.
-                wp_clear_scheduled_hook( 'ultimate_performance_tick' );
-                wp_clear_scheduled_hook( 'ultimate_performance_janitor' );
-                wp_clear_scheduled_hook( 'ultimate_performance_telemetry' );
+                //
+                // Phase 0.7.0: CronGuard is the single source of truth for
+                // UP-owned cron cleanup. It clears ALL six known hooks
+                // (4 canonical + 2 dead) so no scheduled work is left for a
+                // plugin that is no longer running.
+                require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/CronGuard.php';
+                CronGuard::deactivate();
 
                 // If WE own the object-cache drop-in, remove it so WP falls back cleanly.
                 $dropin = WP_CONTENT_DIR . '/object-cache.php';
@@ -330,11 +344,11 @@ final class Installer {
                 Settings::instance()->reset();
                 // §0.6.5: delete EVERY plugin-owned transient, not just a few.
                 self::delete_all_plugin_transients();
-                // Belt and braces: deactivation already clears these; uninstall must
-                // not depend on that having happened.
-                wp_clear_scheduled_hook( 'ultimate_performance_tick' );
-                wp_clear_scheduled_hook( 'ultimate_performance_janitor' );
-                wp_clear_scheduled_hook( 'ultimate_performance_telemetry' );
+                // Phase 0.7.0: CronGuard owns all UP cron cleanup. Replaces
+                // the legacy hand-maintained wp_clear_scheduled_hook() list
+                // that was missing the canonical daily hooks.
+                require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/CronGuard.php';
+                CronGuard::deactivate();
                 // M5: the SHARED cluster tables (base prefix = network-wide
                 // coordination point; one DROP removes them for the whole network).
                 // N5: drop ALL three cluster tables (epoch + nodes/lease + events).
@@ -479,30 +493,16 @@ final class Installer {
                         }
                 }
 
-                // STEP 3: Migrate cron schedule.
-                // The action hook name (ultimate_performance_tick) is unchanged.
-                // Only the recurrence name changes from 'uc_every_minute' to
-                // 'up_every_minute'. WordPress stores the recurrence as a
-                // property of the scheduled event, so we clear + reschedule.
-                try {
-                        $next = wp_next_scheduled( 'ultimate_performance_tick' );
-                        if ( $next ) {
-                                wp_clear_scheduled_hook( 'ultimate_performance_tick' );
-                                wp_schedule_event( time() + 60, 'up_every_minute', 'ultimate_performance_tick' );
-                        }
-                        $next_j = wp_next_scheduled( 'ultimate_performance_janitor' );
-                        if ( $next_j ) {
-                                wp_clear_scheduled_hook( 'ultimate_performance_janitor' );
-                                wp_schedule_event( time() + 60, 'up_every_minute', 'ultimate_performance_janitor' );
-                        }
-                        $next_t = wp_next_scheduled( 'ultimate_performance_telemetry' );
-                        if ( $next_t ) {
-                                wp_clear_scheduled_hook( 'ultimate_performance_telemetry' );
-                                wp_schedule_event( time() + 60, 'up_every_minute', 'ultimate_performance_telemetry' );
-                        }
-                } catch ( \Throwable $e ) { // phpcs:ignore Squiz.Commenting
-                        // Cron migration is best-effort.
-                }
+                // STEP 3 (Phase 0.7.0 — REMOVED): cron schedule migration
+                // used to live here. It has been moved to CronGuard, which:
+                //   - Clears the dead hooks (ultimate_performance_janitor,
+                //     ultimate_performance_telemetry) that this migration
+                //     scheduled at the wrong recurrence.
+                //   - Re-creates the canonical daily hooks at off-peak times.
+                // CronGuard::activate() (called by Installer::activate()
+                // BEFORE this method) handles all of this idempotently, so
+                // there is nothing left for the rebrand migration to do.
+                // The try/catch is preserved for historical clarity.
         }
 
         private static function rrmdir( $dir ) {

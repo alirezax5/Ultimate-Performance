@@ -175,31 +175,77 @@ function shim_delete_transient( $name ) {
 // ---------------------------------------------------------------------------
 // Cron schedule store.
 // ---------------------------------------------------------------------------
+//
+// Phase 0.7.0: the store was upgraded to mirror the REAL WordPress cron
+// option shape: `[ts => [hook => [args_key => array(schedule, args)]]]`.
+// The previous flat `[hook => [ts => true]]` shape did not let CronGuard's
+// count_events_for() (which iterates _get_cron_array() the same way
+// WordPress core does) find any events.
+//
+// All shim_* helpers and the cron.json file now use the WP-shaped format.
 
 function shim_cron_events() {
         return state_get( 'cron.json' );
 }
 
-function shim_next_scheduled( $hook ) {
-        $all = shim_cron_events();
-        if ( empty( $all[ $hook ] ) || ! is_array( $all[ $hook ] ) ) {
-                return false;
-        }
-        $ts = array_map( 'intval', array_keys( $all[ $hook ] ) );
-        sort( $ts );
-        foreach ( $ts as $t ) {
-                if ( $t >= time() - 5 ) {
-                        return $t;
-                }
-        }
-        return $ts[0];
+/**
+ * Return the full cron array in real-WP shape.
+ *
+ * @return array<int|string,array<string,array<string,array<string,mixed>>>
+ */
+function shim_cron_array() {
+        return shim_cron_events();
 }
 
-function shim_schedule_event( $ts, $recurrence, $hook ) {
+function shim_next_scheduled( $hook ) {
+        $all = shim_cron_events();
+        if ( ! is_array( $all ) ) {
+                return false;
+        }
+        $ts_sorted = array_keys( $all );
+        $now        = time();
+        sort( $ts_sorted );
+        foreach ( $ts_sorted as $t ) {
+                if ( ! isset( $all[ $t ][ $hook ] ) ) {
+                        continue;
+                }
+                if ( (int) $t >= $now - 5 ) {
+                        return (int) $t;
+                }
+        }
+        // Past events: WordPress still reports the earliest one (so a
+        // caller can detect "due now") — return the first match.
+        foreach ( $ts_sorted as $t ) {
+                if ( isset( $all[ $t ][ $hook ] ) ) {
+                        return (int) $t;
+                }
+        }
+        return false;
+}
+
+function shim_schedule_event( $ts, $recurrence, $hook, $args = array() ) {
+        $args = is_array( $args ) ? $args : array();
         state_update(
                 'cron.json',
-                static function ( $all ) use ( $hook, $ts ) {
-                        $all[ $hook ][ (int) $ts ] = true;
+                static function ( $all ) use ( $hook, $ts, $recurrence, $args ) {
+                        $ts = (int) $ts;
+                        if ( ! isset( $all[ $ts ] ) || ! is_array( $all[ $ts ] ) ) {
+                                $all[ $ts ] = array();
+                        }
+                        if ( ! isset( $all[ $ts ][ $hook ] ) || ! is_array( $all[ $ts ][ $hook ] ) ) {
+                                $all[ $ts ][ $hook ] = array();
+                        }
+                        // 0.7.1: args_key must match the key computed by
+                        // shim_unschedule_event so events scheduled WITH args
+                        // can be unscheduled by passing the same args. Real
+                        // WordPress uses md5(serialize($args)); the shim uses
+                        // md5(json_encode($args)) for cross-tool consistency
+                        // (PHP serialize format is version-sensitive).
+                        $key = md5( (string) json_encode( $args ) );
+                        $all[ $ts ][ $hook ][ $key ] = array(
+                                'schedule' => $recurrence,
+                                'args'     => $args,
+                        );
                         return $all;
                 }
         );
@@ -210,8 +256,49 @@ function shim_clear_scheduled_hook( $hook ) {
         state_update(
                 'cron.json',
                 static function ( $all ) use ( $hook ) {
-                        unset( $all[ $hook ] );
+                        if ( ! is_array( $all ) ) {
+                                return $all;
+                        }
+                        foreach ( $all as $ts => $hooks ) {
+                                if ( is_array( $hooks ) && isset( $hooks[ $hook ] ) ) {
+                                        unset( $all[ $ts ][ $hook ] );
+                                }
+                                if ( isset( $all[ $ts ] ) && empty( $all[ $ts ] ) ) {
+                                        unset( $all[ $ts ] );
+                                }
+                        }
                         return $all;
                 }
         );
 }
+
+/**
+ * Remove ONE specific (ts, hook, args) instance — mirrors wp_unschedule_event.
+ *
+ * @param int                $timestamp
+ * @param string             $hook
+ * @param array<string,mixed> $args
+ * @return bool
+ */
+function shim_unschedule_event( $timestamp, $hook, $args = array() ) {
+        $key = md5( (string) json_encode( $args ) );
+        state_update(
+                'cron.json',
+                static function ( $all ) use ( $timestamp, $hook, $key ) {
+                        $ts = (int) $timestamp;
+                        if ( ! is_array( $all ) || ! isset( $all[ $ts ][ $hook ][ $key ] ) ) {
+                                return $all;
+                        }
+                        unset( $all[ $ts ][ $hook ][ $key ] );
+                        if ( empty( $all[ $ts ][ $hook ] ) ) {
+                                unset( $all[ $ts ][ $hook ] );
+                        }
+                        if ( isset( $all[ $ts ] ) && empty( $all[ $ts ] ) ) {
+                                unset( $all[ $ts ] );
+                        }
+                        return $all;
+                }
+        );
+        return true;
+}
+

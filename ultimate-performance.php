@@ -3,7 +3,7 @@
  * Plugin Name:       Ultimate Performance
  * Plugin URI:        https://github.com/alirezax5/Ultimate-Performance
  * Description:       Production-grade WordPress caching platform. Zero-PHP public page cache HITs via web-server integration, object cache with Redis/Memcached/APCu/SQLite/File backends and promotion-fenced failover, RabbitMQ queue with fallback chain, off-peak cron scheduler, bounded telemetry, WooCommerce-safe request classification.
- * Version:           0.6.9
+ * Version:           0.7.3
  * Requires at least: 6.0
  * Requires PHP:      8.1
  * Author:            alirezax5
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 // bootstrap both load this file's symbols). Only ULTIMATE_PERFORMANCE_DIR was
 // previously guarded; VERSION/FILE/URL emitted PHP warnings on re-include.
 if ( ! defined( 'ULTIMATE_PERFORMANCE_VERSION' ) ) {
-        define( 'ULTIMATE_PERFORMANCE_VERSION', '0.6.9' );
+        define( 'ULTIMATE_PERFORMANCE_VERSION', '0.7.3' );
 }
 if ( ! defined( 'ULTIMATE_PERFORMANCE_FILE' ) ) {
         define( 'ULTIMATE_PERFORMANCE_FILE', __FILE__ );

@@ -327,14 +327,29 @@ function wp_cache_flush() {
 function wp_next_scheduled( $hook ) {
         return S\wp_next_scheduled( $hook );
 }
-function wp_schedule_event( $ts, $recurrence, $hook ) {
-        return S\wp_schedule_event( $ts, $recurrence, $hook );
+function wp_schedule_event( $ts, $recurrence, $hook, $args = array() ) {
+        return S\wp_schedule_event( $ts, $recurrence, $hook, $args );
 }
-function wp_schedule_single_event( $ts, $hook ) {
-        return S\wp_schedule_single_event( $ts, $hook );
+function wp_schedule_single_event( $ts, $hook, $args = array() ) {
+        return S\wp_schedule_single_event( $ts, $hook, $args );
 }
 function wp_clear_scheduled_hook( $hook ) {
         return S\wp_clear_scheduled_hook( $hook );
+}
+// 0.7.1 shim fix: CronGuard calls these three UNQUALIFIED from the
+// UltimatePerformance\Core namespace. PHP's unqualified-function-call
+// fallback only reaches the GLOBAL namespace (not a sibling namespace),
+// so we MUST expose global wrappers. Without these, CronGuard::repair()
+// either bails early via the function_exists() guard or fatals with
+// "Call to undefined function UltimatePerformance\Core\_get_cron_array()".
+function _get_cron_array() {
+        return S\shim_cron_array();
+}
+function wp_unschedule_event( $timestamp, $hook, $args = array() ) {
+        return S\shim_unschedule_event( $timestamp, $hook, $args );
+}
+function wp_get_schedules() {
+        return S\wp_get_schedules();
 }
 
 // --- activation plumbing -----------------------------------------------------------

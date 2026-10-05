@@ -28,217 +28,242 @@ defined( 'ABSPATH' ) || exit;
 
 final class Scheduler {
 
-	const CRON_JANITOR   = 'ultimate_cache/janitor_tick';
-	const CRON_WARMUP    = 'ultimate_cache/warmup_tick';
-	const CRON_TELEMETRY = 'ultimate_cache/telemetry_tick';
+        const CRON_JANITOR   = 'ultimate_cache/janitor_tick';
+        const CRON_WARMUP    = 'ultimate_cache/warmup_tick';
+        const CRON_TELEMETRY = 'ultimate_cache/telemetry_tick';
 
-	const OFFPEAK_START = 1;   // site-local hour, window start (inclusive)
-	const OFFPEAK_END   = 5;   // site-local hour, window end (exclusive)
-	const RUN_BUDGET_S  = 10;  // per-dispatch runtime budget (seconds)
-	const LOCK_TTL_S    = 300; // backpressure lock validity window
+        const OFFPEAK_START = 1;   // site-local hour, window start (inclusive)
+        const OFFPEAK_END   = 5;   // site-local hour, window end (exclusive)
+        const RUN_BUDGET_S  = 10;  // per-dispatch runtime budget (seconds)
+        const LOCK_TTL_S    = 300; // backpressure lock validity window
 
-	/** @var string lock/state dir under the hardened cache tree */
-	private $base;
+        /** @var string lock/state dir under the hardened cache tree */
+        private $base;
 
-	/** @var array<string,callable> hook => job (test/inject seam) */
-	private $jobs;
+        /** @var array<string,callable> hook => job (test/inject seam) */
+        private $jobs;
 
-	/**
-	 * @param string|null               $base Lock dir override (tests).
-	 * @param array<string,callable>    $jobs Job overrides (tests).
-	 */
-	public function __construct( $base = null, array $jobs = array() ) {
-		$this->base = null === $base
-			? ( defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR : ABSPATH . 'wp-content' ) . '/cache/ultimate-performance/meta'
-			: rtrim( (string) $base, '/' );
-		if ( ! is_dir( $this->base ) ) {
-			@mkdir( $this->base, 0775, true );
-		}
-		$this->jobs = $jobs;
-	}
+        /**
+         * @param string|null               $base Lock dir override (tests).
+         * @param array<string,callable>    $jobs Job overrides (tests).
+         */
+        public function __construct( $base = null, array $jobs = array() ) {
+                $this->base = null === $base
+                        ? ( defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR : ABSPATH . 'wp-content' ) . '/cache/ultimate-performance/meta'
+                        : rtrim( (string) $base, '/' );
+                if ( ! is_dir( $this->base ) ) {
+                        @mkdir( $this->base, 0775, true );
+                }
+                $this->jobs = $jobs;
+        }
 
-	/**
-	 * @return array<int,string> The plugin-owned cron hooks.
-	 */
-	public static function scheduled_hooks() {
-		return array( self::CRON_JANITOR, self::CRON_WARMUP, self::CRON_TELEMETRY );
-	}
+        /**
+         * @return array<int,string> The plugin-owned cron hooks.
+         */
+        public static function scheduled_hooks() {
+                return array( self::CRON_JANITOR, self::CRON_WARMUP, self::CRON_TELEMETRY );
+        }
 
-	/**
-	 * Site timezone (timezone_string option, else PHP default, else UTC —
-	 * always validated, never trusted).
-	 *
-	 * @return string
-	 */
-	public static function site_tz() {
-		$tz = '';
-		if ( function_exists( 'get_option' ) ) {
-			$tz = (string) get_option( 'timezone_string', '' );
-		}
-		if ( '' === $tz ) {
-			$tz = (string) @date_default_timezone_get();
-		}
-		try {
-			new \DateTimeZone( $tz );
-		} catch ( \Throwable $e ) {
-			$tz = 'UTC';
-		}
-		return $tz;
-	}
+        /**
+         * Site timezone (timezone_string option, else PHP default, else UTC —
+         * always validated, never trusted).
+         *
+         * @return string
+         */
+        public static function site_tz() {
+                $tz = '';
+                if ( function_exists( 'get_option' ) ) {
+                        $tz = (string) get_option( 'timezone_string', '' );
+                }
+                if ( '' === $tz ) {
+                        $tz = (string) @date_default_timezone_get();
+                }
+                try {
+                        new \DateTimeZone( $tz );
+                } catch ( \Throwable $e ) {
+                        $tz = 'UTC';
+                }
+                return $tz;
+        }
 
-	/**
-	 * Next off-peak occurrence: the site-local window start plus a uniform
-	 * random jitter (never in the past; inside today's remaining window when
-	 * we are already inside it).
-	 *
-	 * @param int|null $now Test seam (defaults to time()).
-	 * @return int Unix timestamp.
-	 */
-	public function next_offpeak( $now = null ) {
-		$now      = null === $now ? time() : (int) $now;
-		$tz       = new \DateTimeZone( self::site_tz() );
-		$window_s = ( self::OFFPEAK_END - self::OFFPEAK_START ) * 3600;
-		$local    = ( new \DateTime( '@' . $now ) )->setTimezone( $tz );
-		$h        = (int) $local->format( 'G' );
-		$today    = $local->format( 'Y-m-d' );
-		$start_ts = ( new \DateTime( $today . sprintf( ' %02d:00:00', self::OFFPEAK_START ), $tz ) )->getTimestamp();
+        /**
+         * Next off-peak occurrence: the site-local window start plus a uniform
+         * random jitter (never in the past; inside today's remaining window when
+         * we are already inside it).
+         *
+         * @param int|null $now Test seam (defaults to time()).
+         * @return int Unix timestamp.
+         */
+        public function next_offpeak( $now = null ) {
+                $now      = null === $now ? time() : (int) $now;
+                $tz       = new \DateTimeZone( self::site_tz() );
+                $window_s = ( self::OFFPEAK_END - self::OFFPEAK_START ) * 3600;
+                $local    = ( new \DateTime( '@' . $now ) )->setTimezone( $tz );
+                $h        = (int) $local->format( 'G' );
+                $today    = $local->format( 'Y-m-d' );
+                $start_ts = ( new \DateTime( $today . sprintf( ' %02d:00:00', self::OFFPEAK_START ), $tz ) )->getTimestamp();
 
-		if ( $h < self::OFFPEAK_START ) {
-			// Before today's window: jitter across the whole window.
-			return $start_ts + random_int( 0, max( 60, $window_s - 60 ) );
-		}
-		if ( $h < self::OFFPEAK_END ) {
-			// Inside today's window: jitter across the REMAINING part.
-			$remaining = $start_ts + $window_s - $now;
-			return $now + random_int( 60, max( 120, $remaining - 60 ) );
-		}
-		// After today's window: tomorrow's window, full jitter.
-		$tomorrow = ( new \DateTime( $today . ' 00:00:00', $tz ) )->modify( '+1 day' );
-		$tstart   = ( new \DateTime( $tomorrow->format( 'Y-m-d' ) . sprintf( ' %02d:00:00', self::OFFPEAK_START ), $tz ) )->getTimestamp();
-		return $tstart + random_int( 0, max( 60, $window_s - 60 ) );
-	}
+                if ( $h < self::OFFPEAK_START ) {
+                        // Before today's window: jitter across the whole window.
+                        return $start_ts + random_int( 0, max( 60, $window_s - 60 ) );
+                }
+                if ( $h < self::OFFPEAK_END ) {
+                        // Inside today's window: jitter across the REMAINING part.
+                        $remaining = $start_ts + $window_s - $now;
+                        return $now + random_int( 60, max( 120, $remaining - 60 ) );
+                }
+                // After today's window: tomorrow's window, full jitter.
+                $tomorrow = ( new \DateTime( $today . ' 00:00:00', $tz ) )->modify( '+1 day' );
+                $tstart   = ( new \DateTime( $tomorrow->format( 'Y-m-d' ) . sprintf( ' %02d:00:00', self::OFFPEAK_START ), $tz ) )->getTimestamp();
+                return $tstart + random_int( 0, max( 60, $window_s - 60 ) );
+        }
 
-	/**
-	 * Register all plugin cron hooks (idempotent / deduplicated).
-	 *
-	 * @param int|null $now Test seam.
-	 * @return array<int,string> Hooks that were newly scheduled.
-	 */
-	public function register( $now = null ) {
-		$now        = null === $now ? time() : (int) $now;
-		$scheduled  = array();
-		if ( ! function_exists( 'wp_schedule_event' ) ) {
-			return $scheduled;
-		}
-		foreach ( self::scheduled_hooks() as $hook ) {
-			// DEDUP: an already-scheduled future occurrence is never double-booked.
-			$next = function_exists( 'wp_next_scheduled' ) ? wp_next_scheduled( $hook ) : false;
-			if ( false !== $next && (int) $next > $now ) {
-				continue;
-			}
-			if ( wp_schedule_event( $this->next_offpeak( $now ), 'daily', $hook ) ) {
-				$scheduled[] = $hook;
-			}
-		}
-		return $scheduled;
-	}
+        /**
+         * Register all plugin cron hooks.
+         *
+         * NOTE (Phase 0.7.0): the actual scheduling (wp_schedule_event)
+         * has moved to CronGuard::activate() / CronGuard::ensure_scheduled(),
+         * which are the single source of truth for all UP-owned cron
+         * scheduling. The legacy "register() schedules events" path was
+         * one of the three code paths that produced ~5,660 duplicate cron
+         * events and a 1.26MB cron option on production sites.
+         *
+         * This method is retained for back-compat with any external code
+         * (or audit suite) that called it directly. It now delegates to
+         * CronGuard so the behavior stays correct without writing to the
+         * cron option on every request.
+         *
+         * @param int|null $now Test seam (kept for back-compat; ignored).
+         * @return array<int,string> Hooks that were newly scheduled (always [] — scheduling is CronGuard's job now).
+         */
+        public function register( $now = null ) {
+                if ( class_exists( '\UltimatePerformance\Core\CronGuard' ) ) {
+                        CronGuard::ensure_scheduled();
+                }
+                // Back-compat return signature: previously this returned the
+                // list of hooks newly scheduled. CronGuard is the only caller
+                // that can answer that question accurately; we report an
+                // empty array because in steady state no NEW hooks should be
+                // scheduled by this call.
+                return array();
+        }
 
-	/**
-	 * Cron tick: dispatch every due hook. Runs under a per-hook FileLock
-	 * (backpressure: a still-running predecessor SKIPS this tick) and a hard
-	 * runtime budget, then re-books exactly one next off-peak occurrence.
-	 *
-	 * @param int|null $now Test seam.
-	 * @return array<int,string> Hooks that actually ran.
-	 */
-	public function dispatch_due( $now = null ) {
-		$now = null === $now ? time() : (int) $now;
-		$ran = array();
-		if ( ! function_exists( 'wp_next_scheduled' ) ) {
-			return $ran;
-		}
-		foreach ( self::scheduled_hooks() as $hook ) {
-			$ts = wp_next_scheduled( $hook );
-			if ( false === $ts || (int) $ts > $now ) {
-				continue; // not due
-			}
-			if ( $this->run_job( $hook ) ) {
-				$ran[] = $hook;
-			}
-			// Self-perpetuate: one next occurrence, whatever the run outcome.
-			if ( function_exists( 'wp_clear_scheduled_hook' ) ) {
-				wp_clear_scheduled_hook( $hook );
-			}
-			if ( function_exists( 'wp_schedule_event' ) ) {
-				wp_schedule_event( $this->next_offpeak( $now ), 'daily', $hook );
-			}
-		}
-		return $ran;
-	}
+        /**
+         * Cron tick: dispatch every due hook. Runs under a per-hook FileLock
+         * (backpressure: a still-running predecessor SKIPS this tick) and a hard
+         * runtime budget, then re-books exactly one next off-peak occurrence.
+         *
+         * NOTE (Phase 0.7.0): the canonical entry point for daily hook ticks
+         * is now CronGuard::run_single_job(), which is the actual callback
+         * bound to each canonical daily action via add_action(). This
+         * dispatch_due() method is kept for back-compat with existing audit
+         * suites that exercised the legacy iteration path directly; it is
+         * no longer the production dispatch path.
+         *
+         * @param int|null $now Test seam.
+         * @return array<int,string> Hooks that actually ran.
+         */
+        public function dispatch_due( $now = null ) {
+                $now = null === $now ? time() : (int) $now;
+                $ran = array();
+                if ( ! function_exists( 'wp_next_scheduled' ) ) {
+                        return $ran;
+                }
+                foreach ( self::scheduled_hooks() as $hook ) {
+                        $ts = wp_next_scheduled( $hook );
+                        if ( false === $ts || (int) $ts > $now ) {
+                                continue; // not due
+                        }
+                        if ( $this->run_job( $hook ) ) {
+                                $ran[] = $hook;
+                        }
+                        // Self-perpetuate: one next occurrence, whatever the run outcome.
+                        if ( function_exists( 'wp_clear_scheduled_hook' ) ) {
+                                wp_clear_scheduled_hook( $hook );
+                        }
+                        if ( function_exists( 'wp_schedule_event' ) ) {
+                                wp_schedule_event( $this->next_offpeak( $now ), 'daily', $hook );
+                        }
+                }
+                return $ran;
+        }
 
-	/**
-	 * @param string $hook
-	 * @return bool True when the job ran (not skipped by backpressure).
-	 */
-	private function run_job( $hook ) {
-		if ( ! is_dir( $this->base ) ) {
-			@mkdir( $this->base, 0775, true );
-		}
-		$lock = new FileLock( $this->base . '/sched-' . md5( $hook ) . '.lock' );
-		if ( ! $lock->acquire( self::LOCK_TTL_S ) ) {
-			return false; // BACKPRESSURE: the previous run is still active
-		}
-		try {
-			$job      = $this->resolve_job( $hook );
-			$deadline = microtime( true ) + self::RUN_BUDGET_S;
-			call_user_func( $job, $deadline );
-			return true;
-		} catch ( \Throwable $e ) {
-			return false; // a failing job must never break the cron tick
-		} finally {
-			$lock->release();
-		}
-	}
+        /**
+         * Public wrapper around the private run_job() — the CronGuard
+         * per-hook cron callback dispatches ONE job (bounded, backpressure
+         * guarded) and CronGuard handles the rescheduling. This method is
+         * the entry point for the canonical daily cron ticks.
+         *
+         * @param string $hook One of CRON_JANITOR / CRON_WARMUP / CRON_TELEMETRY.
+         * @return bool True when the job ran (not skipped by backpressure).
+         */
+        public function run_single_job( $hook ) {
+                return $this->run_job( $hook );
+        }
 
-	/**
-	 * @param string $hook
-	 * @return callable fn( int $deadline_microts ): void
-	 */
-	private function resolve_job( $hook ) {
-		if ( isset( $this->jobs[ $hook ] ) && is_callable( $this->jobs[ $hook ] ) ) {
-			return $this->jobs[ $hook ];
-		}
-		switch ( $hook ) {
-			case self::CRON_JANITOR:
-				return function ( $deadline ) {
-					if ( ! class_exists( '\PDO' ) || ! in_array( 'sqlite', \PDO::getAvailableDrivers(), true ) || ! class_exists( '\UltimatePerformance\ObjectCache\SqliteBackend' ) ) {
-						return; // nothing to sweep on this host
-					}
-					$b = new \UltimatePerformance\ObjectCache\SqliteBackend();
-					while ( microtime( true ) < $deadline ) {
-						$deleted = $b->janitor( 1 ); // one bounded chunk per pass
-						if ( false === $deleted || $deleted < 1 ) {
-							break; // done (or backend degraded)
-						}
-					}
-					$b->close();
-				};
-			case self::CRON_WARMUP:
-				return function ( $deadline ) {
-					if ( ! class_exists( '\UltimatePerformance\Warmup\Runner' ) ) {
-						return;
-					}
-					( new \UltimatePerformance\Warmup\Runner() )->run();
-				};
-			case self::CRON_TELEMETRY:
-				return function ( $deadline ) {
-					if ( class_exists( '\UltimatePerformance\Core\Telemetry' ) ) {
-						( new Telemetry() )->write_snapshot();
-					}
-				};
-		}
-		return function () {
-			return true;
-		};
-	}
+        /**
+         * @param string $hook
+         * @return bool True when the job ran (not skipped by backpressure).
+         */
+        private function run_job( $hook ) {
+                if ( ! is_dir( $this->base ) ) {
+                        @mkdir( $this->base, 0775, true );
+                }
+                $lock = new FileLock( $this->base . '/sched-' . md5( $hook ) . '.lock' );
+                if ( ! $lock->acquire( self::LOCK_TTL_S ) ) {
+                        return false; // BACKPRESSURE: the previous run is still active
+                }
+                try {
+                        $job      = $this->resolve_job( $hook );
+                        $deadline = microtime( true ) + self::RUN_BUDGET_S;
+                        call_user_func( $job, $deadline );
+                        return true;
+                } catch ( \Throwable $e ) {
+                        return false; // a failing job must never break the cron tick
+                } finally {
+                        $lock->release();
+                }
+        }
+
+        /**
+         * @param string $hook
+         * @return callable fn( int $deadline_microts ): void
+         */
+        private function resolve_job( $hook ) {
+                if ( isset( $this->jobs[ $hook ] ) && is_callable( $this->jobs[ $hook ] ) ) {
+                        return $this->jobs[ $hook ];
+                }
+                switch ( $hook ) {
+                        case self::CRON_JANITOR:
+                                return function ( $deadline ) {
+                                        if ( ! class_exists( '\PDO' ) || ! in_array( 'sqlite', \PDO::getAvailableDrivers(), true ) || ! class_exists( '\UltimatePerformance\ObjectCache\SqliteBackend' ) ) {
+                                                return; // nothing to sweep on this host
+                                        }
+                                        $b = new \UltimatePerformance\ObjectCache\SqliteBackend();
+                                        while ( microtime( true ) < $deadline ) {
+                                                $deleted = $b->janitor( 1 ); // one bounded chunk per pass
+                                                if ( false === $deleted || $deleted < 1 ) {
+                                                        break; // done (or backend degraded)
+                                                }
+                                        }
+                                        $b->close();
+                                };
+                        case self::CRON_WARMUP:
+                                return function ( $deadline ) {
+                                        if ( ! class_exists( '\UltimatePerformance\Warmup\Runner' ) ) {
+                                                return;
+                                        }
+                                        ( new \UltimatePerformance\Warmup\Runner() )->run();
+                                };
+                        case self::CRON_TELEMETRY:
+                                return function ( $deadline ) {
+                                        if ( class_exists( '\UltimatePerformance\Core\Telemetry' ) ) {
+                                                ( new Telemetry() )->write_snapshot();
+                                        }
+                                };
+                }
+                return function () {
+                        return true;
+                };
+        }
 }

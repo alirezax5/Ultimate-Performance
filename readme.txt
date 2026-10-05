@@ -4,7 +4,7 @@ Tags: cache, caching, performance, object-cache, page-cache, redis, memcached, s
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.3
-Stable tag: 0.6.9
+Stable tag: 0.7.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -105,6 +105,70 @@ No. Invalidation bumps generation counters; only the plugin's own keys are
 affected. A foreign-key sentinel is asserted in the audit suites.
 
 == Changelog ==
+
+= 0.7.1 =
+* Critical (CronGuard) fix: cron event `args` are now preserved during
+  unscheduling. `events_for()` captures the stored `args` from each
+  cron instance and `repair()` passes them to `wp_unschedule_event()`.
+  Previously, events scheduled WITH args (e.g. jobs with parameters)
+  could not be matched and removed by repair() — WordPress identifies
+  cron events by the (timestamp, hook, args) tuple, so the unschedule
+  silently failed and the duplicates survived every repair run.
+* Critical (CronGuard) fix: atomic repair lock. The previous transient
+  check-then-set pattern (`if (!get_transient()) set_transient()`) was
+  non-atomic — two concurrent admin requests could both see "no lock"
+  and both run repair(). Replaced with `add_option()` which returns
+  false if the option already exists, giving database-level atomicity
+  on MySQL. Stale locks (a crashed process) are taken over after the
+  60s TTL expires. The new private helpers `acquire_lock()` /
+  `release_lock()` are owner-safe: a process only releases a lock it
+  still owns.
+* Critical (CronGuard) fix: deterministic callback identity. The daily
+  canonical hooks (janitor / warmup / telemetry) were bound to a NEW
+  anonymous Closure on every call to `register_callbacks()`. Because
+  every Closure has a different `spl_object_hash`, `has_action()` could
+  NEVER match a previously-registered Closure, so the callback was
+  re-registered once per request — slowly inflating the hook callback
+  table. Replaced the Closures with deterministic
+  `array(__CLASS__, 'method_name')` callbacks bound to the new public
+  methods `run_janitor()`, `run_warmup()`, `run_telemetry()`.
+  `has_action()` correctly recognizes the prior registration and
+  prevents duplicates.
+* Improvement (CronGuard): repair() now reports `attempted_removals`,
+  `successful_removals`, and `failed_removals` separately (in addition
+  to the back-compat `removed` alias kept for existing consumers).
+* Changed: removed the `REPAIR_LOCK_TRANSIENT` / `REPAIR_LOCK_TTL`
+  constants; added `LOCK_OPTION_PREFIX` = `'up_cron_lock_'` and
+  `LOCK_TTL` = 60.
+* Tests: `tests/audit-cron-dedup.php` extended with new scenarios
+  covering args preservation, atomic lock acquire/release/stale/owner-
+  safe behaviour, 100× register_callbacks() idempotency, and the new
+  successful/failed removal counters.
+
+
+* Critical: WP-Cron deduplication fix. The non-atomic
+  `if (!wp_next_scheduled()) { wp_schedule_event(); }` pattern on every
+  request produced ~5,660 duplicate cron events and a 1.26MB cron
+  option rewritten every ~3 seconds on production.
+* Added `src/Core/CronGuard.php` — the single source of truth for all
+  UP-owned cron scheduling. Every operation is idempotent,
+  deduplicated, and transient-gated so steady-state requests perform
+  zero cron-option writes.
+* Added: WP-Cron Health panel on the Diagnostics tab. Shows per-hook
+  status (Healthy/Missing/Duplicate/Stray) + a "Repair Ultimate
+  Performance Cron Events" button that runs `CronGuard::repair()`.
+* Added: WP-CLI commands `wp ultimate-performance cron status` and
+  `wp ultimate-performance cron repair`.
+* Added: 17-scenario regression suite `tests/audit-cron-dedup.php`.
+* Removed dead `ultimate_performance_janitor` and
+  `ultimate_performance_telemetry` hooks (no callbacks; rebranded to
+  the canonical daily hooks).
+* Idempotent activation: `Installer::activate()` calls
+  `CronGuard::activate()` which schedules every canonical hook exactly
+  once. Repeated activation is a no-op for scheduling.
+* Clean deactivation + uninstall: `Installer::deactivate()` and
+  `Installer::uninstall_data()` delegate to `CronGuard::deactivate()`
+  which clears ALL six known UP hooks.
 
 = 0.6.9 =
 * FIX: Nginx verify probe now correctly reports "active" instead of

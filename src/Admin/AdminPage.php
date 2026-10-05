@@ -44,6 +44,10 @@ final class AdminPage {
                 add_action( 'admin_post_up_test_amqp', array( $this, 'handle_test_amqp' ) );
                 add_action( 'admin_post_up_oc_install', array( $this, 'handle_oc_install' ) );
                 add_action( 'admin_post_up_oc_remove', array( $this, 'handle_oc_remove' ) );
+                // Phase 0.7.0 — Cron repair handler (POST endpoint for the
+                // "Repair Ultimate Performance Cron Events" button on the
+                // Diagnostics tab).
+                add_action( 'admin_post_up_cron_repair', array( $this, 'handle_cron_repair' ) );
                 // NOTE: wp_ajax_up_ajax_* hooks are registered in ultimate-performance.php
                 // (the plugin main file) at plugin load time. They MUST be
                 // registered before boot() so admin-ajax.php can find them even
@@ -252,6 +256,41 @@ final class AdminPage {
                 }
                 $n = ( new InvalidationHooks() )->purge_site();
                 wp_safe_redirect( add_query_arg( 'up_purge', (string) (int) $n, $base ) );
+                exit;
+        }
+
+        /**
+         * Phase 0.7.0 — Handle the "Repair Ultimate Performance Cron Events"
+         * POST from the Diagnostics tab.
+         *
+         * Capability: manage_options. Nonce: up_cron_repair.
+         * Runs CronGuard::repair() and stores the before/after stats in a
+         * transient so the next render can surface them as an admin notice.
+         */
+        public function handle_cron_repair() {
+                if ( ! $this->capability_ok() ) {
+                        wp_die( esc_html__( 'Insufficient permissions.', 'ultimate-performance' ), 403 );
+                }
+                check_admin_referer( 'up_cron_repair', '_ucnonce' );
+                $tab = $this->posted_tab( 'diagnostics' );
+                $base = $this->tab_url( $tab );
+
+                if ( ! class_exists( '\UltimatePerformance\Core\CronGuard' ) ) {
+                        require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/CronGuard.php';
+                }
+                $stats = \UltimatePerformance\Core\CronGuard::repair();
+                set_transient( 'up_cron_repair_stats', $stats, 120 );
+                wp_safe_redirect(
+                        add_query_arg(
+                                array(
+                                        'up_cron_repair' => '1',
+                                        'removed'        => (int) $stats['removed'],
+                                        'dead_removed'   => (int) $stats['dead_removed'],
+                                        'created'        => (int) $stats['created'],
+                                ),
+                                $base
+                        )
+                );
                 exit;
         }
 
@@ -2254,7 +2293,133 @@ final class AdminPage {
                                 ?>
                         </p></div>
                 <?php endif; ?>
+
                 <?php
+                // Phase 0.7.0 — WP-Cron Health section. Renders the per-hook
+                // status table + the "Repair Ultimate Performance Cron Events"
+                // button. CronGuard::get_status() is the single source of truth
+                // for the displayed data.
+                $this->render_cron_health();
+                ?>
+                <?php
+        }
+
+        /**
+         * Phase 0.7.0 — WP-Cron Health panel (Diagnostics tab).
+         *
+         * Lists every UP-owned cron hook with its expected vs actual
+         * scheduled-event count, next execution timestamp, recurrence, and
+         * health status (Healthy / Missing / Duplicate / Stray). Below the
+         * table is a "Repair Ultimate Performance Cron Events" button that
+         * POSTs to admin-post.php?action=up_cron_repair — the handler runs
+         * CronGuard::repair() and redirects back here with a results notice.
+         */
+        private function render_cron_health() {
+                if ( ! class_exists( '\UltimatePerformance\Core\CronGuard' ) ) {
+                        require_once ULTIMATE_PERFORMANCE_DIR . 'src/Core/CronGuard.php';
+                }
+                $rows     = \UltimatePerformance\Core\CronGuard::get_status();
+                $repair_stats = get_transient( 'up_cron_repair_stats' );
+                $just_repaired = isset( $_GET['up_cron_repair'] ) ? sanitize_key( wp_unslash( $_GET['up_cron_repair'] ) ) : '';
+                ?>
+                <h3><?php esc_html_e( 'WP-Cron Health', 'ultimate-performance' ); ?></h3>
+                <p class="description"><?php esc_html_e( 'Single source of truth for Ultimate Performance scheduled events. The cron option was previously bloated by per-request scheduling — CronGuard makes scheduling idempotent and transient-gated.', 'ultimate-performance' ); ?></p>
+
+                <?php if ( $just_repaired && is_array( $repair_stats ) ) : ?>
+                        <div class="notice notice-success is-dismissible"><p>
+                                <?php
+                                echo esc_html(
+                                        sprintf(
+                                                /* translators: 1: duplicates removed, 2: dead-hook events removed, 3: missing events created */
+                                                __( 'Cron repair complete — removed %1$d duplicate event(s), removed %2$d dead-hook event(s), created %3$d missing event(s).', 'ultimate-performance' ),
+                                                (int) $repair_stats['removed'],
+                                                (int) $repair_stats['dead_removed'],
+                                                (int) $repair_stats['created']
+                                        )
+                                );
+                                ?>
+                        </p></div>
+                <?php endif; ?>
+
+                <table class="widefat striped" role="presentation">
+                        <thead>
+                                <tr>
+                                        <th><?php esc_html_e( 'Hook', 'ultimate-performance' ); ?></th>
+                                        <th><?php esc_html_e( 'Expected', 'ultimate-performance' ); ?></th>
+                                        <th><?php esc_html_e( 'Actual', 'ultimate-performance' ); ?></th>
+                                        <th><?php esc_html_e( 'Next execution', 'ultimate-performance' ); ?></th>
+                                        <th><?php esc_html_e( 'Recurrence', 'ultimate-performance' ); ?></th>
+                                        <th><?php esc_html_e( 'Status', 'ultimate-performance' ); ?></th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <?php foreach ( $rows as $row ) : ?>
+                                        <?php
+                                                $status_cls = 'Healthy' === $row['status'] ? 'green' :
+                                                        ( 'Duplicate' === $row['status'] || 'Stray' === $row['status' ] ? 'red' : 'orange');
+                                                $next_label = false === $row['next_ts'] ? '—' :
+                                                        date_i18n( 'Y-m-d H:i:s', (int) $row['next_ts'] );
+                                        ?>
+                                        <tr>
+                                                <td><code><?php echo esc_html( $row['name'] ); ?></code></td>
+                                                <td><?php echo esc_html( (string) $row['expected'] ); ?></td>
+                                                <td><?php echo esc_html( (string) $row['actual'] ); ?></td>
+                                                <td><?php echo esc_html( $next_label ); ?></td>
+                                                <td><?php echo esc_html( $row['recurrence'] ); ?></td>
+                                                <td><span style="color:<?php echo esc_attr( $status_cls ); ?>;">
+                                                        <?php
+                                                        $sym = 'Healthy' === $row['status'] ? '&#10003; ' :
+                                                                ( 'Duplicate' === $row['status'] || 'Stray' === $row['status' ] ? '&#10007; ' : '&#9888; ' );
+                                                        echo $sym; // phpcs:ignore WordPress.Security.EscapeOutput — static glyph.
+                                                        echo esc_html( $row['status'] );
+                                                        ?>
+                                                </span></td>
+                                        </tr>
+                                <?php endforeach; ?>
+                        </tbody>
+                </table>
+
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:10px;">
+                        <input type="hidden" name="action" value="up_cron_repair">
+                        <?php wp_nonce_field( 'up_cron_repair', '_ucnonce' ); ?>
+                        <?php $this->tab_hidden_field( 'diagnostics', 'general' ); ?>
+                        <?php submit_button( __( 'Repair Ultimate Performance Cron Events', 'ultimate-performance' ), 'secondary', 'submit', false ); ?>
+                </form>
+
+                <?php
+                // Cron option size diagnostic — surfaces the actual bytes the
+                // cron option occupies on this install. Repair should drop it
+                // by orders of magnitude on bloated sites.
+                $cron_size = $this->get_cron_option_size();
+                if ( null !== $cron_size ) :
+                        ?>
+                        <p class="description">
+                                <?php
+                                echo esc_html(
+                                        sprintf(
+                                                /* translators: %d: cron option size in bytes */
+                                                __( 'WP-Cron option size: %d bytes.', 'ultimate-performance' ),
+                                                $cron_size
+                                        )
+                                );
+                                ?>
+                        </p>
+                <?php endif; ?>
+                <?php
+        }
+
+        /**
+         * Approximate byte-size of the wp_options cron row for this install.
+         *
+         * @return int|null Bytes, or null when the option is empty/missing.
+         */
+        private function get_cron_option_size() {
+                $cron = function_exists( '_get_cron_array' ) ? _get_cron_array() : get_option( 'cron', array() );
+                if ( ! is_array( $cron ) || empty( $cron ) ) {
+                        return null;
+                }
+                $serialized = maybe_serialize( $cron );
+                return function_exists( 'mb_strlen' ) ? mb_strlen( $serialized, '8bit' ) : strlen( $serialized );
         }
 
         // ===== Advanced =====
